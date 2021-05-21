@@ -1,0 +1,3 @@
+SPARQLWrapper
+SPARQL-parser
+rdflib
