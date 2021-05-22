@@ -3,5 +3,8 @@
         "http://localhost:9999/blazegraph/sparql",
         "http://localhost:19999/blazegraph/sparql"
     ],
-    "file_path": []
+    "file_path": [
+        "./test/scientometrics_graph.json",
+        "./test/scientometrics_prov.json"
+    ]
 }
