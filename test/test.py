@@ -69,18 +69,5 @@ class Test_Sparql(unittest.TestCase):
             """
         self.assertIsInstance(Sparql("./test/config.json").execute_query(input, format=XML), Graph)
     
-    def test_execute_query_wrong_format(self):
-        pass
-
-    def test_merge_identical_outputs(self):
-        input = {'head': {'vars': ['literalValue']}, 'results': {'bindings': [
-            {'literalValue': {'type': 'literal', 'value': '10.1007/bf02028087'}}, 
-            {'literalValue': {'type': 'literal', 'value': '10.1007/bf02028087'}}
-            ]}}
-        expected_output = {'head': {'vars': ['literalValue']}, 'results': {'bindings': [
-            {'literalValue': {'type': 'literal', 'value': '10.1007/bf02028087'}} 
-            ]}}
-        self.assertEqual(Sparql()._merge_identical_outputs(input), expected_output)
-
 if __name__ == '__main__':
     unittest.main()

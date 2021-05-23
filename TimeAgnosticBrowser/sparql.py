@@ -13,10 +13,13 @@
 # DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
+from typing import Union, Set, Tuple
 
-from SPARQLWrapper import SPARQLWrapper, XML, POST
+import re, itertools
+from SPARQLWrapper import SPARQLWrapper, XML, POST, RDFXML, JSON
 from rdflib import Graph
 from oc_ocdm import Reader
+from rdflib.term import URIRef
 from support import File_manager
 
 CONFIG_PATH = "./config.json"
@@ -31,40 +34,72 @@ class Sparql:
         self.endpoints:list = File_manager.import_json(path=self.config_path)["triplestore_url"]
         self.file_paths:list = File_manager.import_json(path=self.config_path)["file_path"]
     
-    def execute_query(self, query:str) -> Graph:
-        output = Graph()
-        if len(self.endpoints) > 0:
-            output += self._query_endpoints(query)
-        if len(self.file_paths) > 0:
-            output += self._query_files(query)
+    def execute_query(self, query:str) -> Union[Set[Tuple[URIRef, URIRef]], Graph]:
+        if "select" in query.lower():
+            output = set()
+            format = JSON
+            if len(self.endpoints) > 0:
+                output.update(self._query_endpoints(query, format=format))
+            if len(self.file_paths) > 0:
+                output.update(self._query_files(query, format=format))
+        elif "construct" in query.lower():
+            output = Graph()
+            format = RDFXML
+            if len(self.endpoints) > 0:
+                output += self._query_endpoints(query, format=format)
+            if len(self.file_paths) > 0:
+                output += self._query_files(query, format=format)
+        if "limit" in query.lower():
+            limit = int(re.search("(?:limit\s*)(\d+)", query, re.IGNORECASE).group(1))
+            if format == JSON:
+                output = set(itertools.islice(output, limit))
+            elif format == RDFXML:
+                new_output = Graph()
+                for triple in list(output.triples((None, None, None)))[:limit]:
+                    new_output.add(triple)
+                output = new_output
         return output
-
-    def _query_endpoints(self, query:str) -> Graph:
-        output = Graph()
+    
+    def _query_endpoints(self, 
+            query:str, 
+            format:Union[RDFXML, JSON]) -> Union[Set[Tuple[URIRef, URIRef]], Graph]:
+        if format == RDFXML:
+            output = Graph()
+        elif format == JSON:
+            output = set()
         for endpoint in self.endpoints:
             sparql = SPARQLWrapper(endpoint=endpoint)
             sparql.setQuery(query)
-            sparql.setReturnFormat(XML)
             # POST is required to avoid the query length limit imposed by the GET method
             sparql.setMethod(POST)
-            results = sparql.query().convert()
-            # print(results)
-            # g = Graph()
-            # g.parse(data=results.toxml(), format="xml")
-            # output += g
+            sparql.setReturnFormat(format)
+            results = sparql.queryAndConvert()
+            if format == JSON:
+                for result_dict in results["results"]["bindings"]:
+                    output.add(tuple(d["value"] for d in result_dict.values()))
+            elif format == RDFXML:
+                output += results
         return output
     
-    def _query_files(self, query:str):
+    def _query_files(self, 
+            query:str, 
+            format:Union[RDFXML, JSON]) -> Union[Set[Tuple[URIRef, URIRef]], Graph]:
         g = Graph()
+        if format == RDFXML:
+            output = Graph()
+        elif format == JSON:
+            output = set()
         for file_path in self.file_paths:
             g += Reader().load(file_path)
         results = g.query(query)
-        output = Graph()
-        for result in results:
-            output.add(result)
+        if format == RDFXML:
+            output += results
+        elif format == JSON:
+            for tuple in results:
+                output.add(tuple)
         return output
 
 query = "SELECT ?s ?p ?o WHERE {?s ?p ?o; a <http://www.w3.org/ns/prov#Entity>} LIMIT 10"
 output = Sparql().execute_query(query=query)
-# for triple in output.triples((None, None, None)):
-#     print(triple)
+print(len(output))
+print(output)
