@@ -18,11 +18,10 @@ from typing import List, Tuple, Dict
 from datetime import datetime
 
 from rdflib.graph import Graph
-from rdflib.term import URIRef
-from support import Sparql
+from sparql import Sparql
 from SPARQLWrapper import XML, JSON
 from prov_entity import ProvEntity
-import copy, inspect, rdflib
+import copy
 from rdflib.plugins.sparql.processor import processUpdate
 from pprint import pprint
 

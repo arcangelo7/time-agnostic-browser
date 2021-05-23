@@ -1,3 +1,4 @@
 SPARQLWrapper
 SPARQL-parser
 rdflib
+zipfile
