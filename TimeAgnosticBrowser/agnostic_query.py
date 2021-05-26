@@ -17,7 +17,7 @@
 from typing import List, Tuple, Dict
 from datetime import datetime
 
-from rdflib.graph import Graph
+from rdflib.graph import ConjunctiveGraph, Graph
 from sparql import Sparql
 from SPARQLWrapper import XML, JSON
 from prov_entity import ProvEntity
@@ -51,7 +51,7 @@ class Agnostic_query:
         return entity_history
 
     @classmethod
-    def _get_entity_current_state(cls, res:str) -> Dict[str, Dict[str, Graph]]:
+    def _get_entity_current_state(cls, res:str) -> Dict[str, Dict[str, ConjunctiveGraph]]:
         """
         Given the URI of a resource, it outputs a dictionary populating only 
         the instant at time t, that is the present one, according to the following model:
@@ -64,31 +64,18 @@ class Agnostic_query:
         }        
         """
         entity_current_state = {res: dict()}
-        query = f"""
-            CONSTRUCT {{
-                <{res}> ?p ?o. 
-                ?snapshot <{ProvEntity.iri_generated_at_time}> ?t;      
-                        <{ProvEntity.iri_has_update_query}> ?updateQuery.
-            }}
-            WHERE {{
-                ?snapshot <{ProvEntity.iri_specialization_of}> <{res}>;
-                        <{ProvEntity.iri_generated_at_time}> ?t.
-                OPTIONAL {{
-                    <{res}> ?p ?o.
-                }}     
-                OPTIONAL {{
-                    ?snapshot <{ProvEntity.iri_has_update_query}> ?updateQuery.
-                }}   
-            }}   
-        """
-        current_state = Sparql().execute_query(query=query, format=XML)
+        current_state = ConjunctiveGraph()
+        for quad in cls._query_dataset(res).quads():
+            current_state.add(quad)
+        for quad in cls._query_provenance(res).quads():
+            current_state.add(quad)
         triples_generated_at_time = current_state.triples((None, ProvEntity.iri_generated_at_time, None))
         most_recent_time = None
         for triple in triples_generated_at_time:
             snapshot_time = triple[2]
-            snapshot_date_time = datetime.strptime(snapshot_time, "%Y-%m-%dT%H:%M:%S%z")
+            snapshot_date_time = cls._convert_to_datetime(snapshot_time)
             if most_recent_time: 
-                if snapshot_date_time > datetime.strptime(most_recent_time, "%Y-%m-%dT%H:%M:%S%z"):
+                if snapshot_date_time > cls._convert_to_datetime(most_recent_time):
                     most_recent_time = snapshot_time
             elif not most_recent_time:
                 most_recent_time = snapshot_time
@@ -98,31 +85,67 @@ class Agnostic_query:
     
     @classmethod
     def _get_old_graphs(
-        cls, entity_current_state:Dict[str, Dict[str, Graph]], res:str
-        ) -> Dict[str, Dict[str, Graph]]:
+        cls, entity_current_state:Dict[str, Dict[str, ConjunctiveGraph]], res:str
+        ) -> Dict[str, Dict[str, ConjunctiveGraph]]:
         """
         Given as input the output of _get_entity_current_state, it populates the graphs 
         relating to the past snapshots of the resource.        
         """
-        ordered_data:List[Tuple[str, Graph]] = sorted(
+        ordered_data:List[Tuple[str, ConjunctiveGraph]] = sorted(
             entity_current_state[res].items(), 
-            key = lambda x:datetime.strptime(x[0], "%Y-%m-%dT%H:%M:%S%z"), 
+            key = lambda x:cls._convert_to_datetime(x[0]), 
             reverse=True
             )
         for index, date_graph in enumerate(ordered_data):
             if index > 0:
-                previous_snapshot = ordered_data[index-1][0]
-                previous_graph:Graph = copy.deepcopy(entity_current_state[res][previous_snapshot])
-                snapshot_uri = list(previous_graph.subjects(object=previous_snapshot))[0]
+                next_snapshot = ordered_data[index-1][0]
+                previous_graph:ConjunctiveGraph = copy.deepcopy(entity_current_state[res][next_snapshot])
+                snapshot_uri = list(previous_graph.subjects(object=next_snapshot))[0]
                 snapshot_update_query:str = previous_graph.value(
                     subject=snapshot_uri, 
                     predicate=ProvEntity.iri_has_update_query,
                     object = None)
                 snapshot_update_query = snapshot_update_query.replace("INSERT", "%temp%").replace("DELETE", "INSERT").replace("%temp%", "DELETE")
-                previous_graph.update(snapshot_update_query)
+                processUpdate(previous_graph, snapshot_update_query)
                 previous_graph.remove((snapshot_uri, None, None))
                 entity_current_state[res][date_graph[0]] = previous_graph
         return entity_current_state
+    
+    @classmethod
+    def _query_dataset(cls, res:str) -> ConjunctiveGraph:
+        query_dataset = f"""
+            SELECT ?s ?p ?o ?c
+            WHERE {{
+                GRAPH ?c {{?s ?p ?o}}
+                VALUES ?s {{<{res}>}}
+            }}   
+        """
+        results = Sparql()._run_the_query(query_dataset)
+        return results
+    
+    @classmethod
+    def _query_provenance(cls, res:str) -> ConjunctiveGraph:
+        query_provenance = f"""
+            CONSTRUCT {{
+                ?snapshot <{ProvEntity.iri_generated_at_time}> ?t;      
+                        <{ProvEntity.iri_has_update_query}> ?updateQuery.
+            }} 
+            WHERE {{
+                ?snapshot <{ProvEntity.iri_specialization_of}> <{res}>;
+                        <{ProvEntity.iri_generated_at_time}> ?t.
+            OPTIONAL {{
+                    ?snapshot <{ProvEntity.iri_has_update_query}> ?updateQuery.
+                }}   
+            }}
+        """
+        results = Sparql()._run_the_query(query_provenance)
+        return results
+    
+    @classmethod
+    def _convert_to_datetime(cls, time_string:str) -> datetime:
+        return datetime.strptime(time_string, "%Y-%m-%dT%H:%M:%S%z")
+
+
 
     
 

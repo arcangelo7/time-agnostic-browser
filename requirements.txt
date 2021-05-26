@@ -1,4 +1,4 @@
 SPARQLWrapper
-SPARQL-parser
 rdflib
+rdflib-jsonld
 zipfile

@@ -13,14 +13,20 @@
 # DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
+
 from typing import Union, Set, Tuple
 
-import re, itertools
-from SPARQLWrapper import SPARQLWrapper, XML, POST, RDFXML, JSON
-from rdflib import Graph
+import re, itertools, rdflib
+from SPARQLWrapper import SPARQLWrapper, POST, RDFXML, JSON, N3, XML
+from rdflib import Graph, ConjunctiveGraph
 from oc_ocdm import Reader
-from rdflib.term import URIRef
+from rdflib.term import URIRef, Literal
 from support import File_manager
+from prov_entity import ProvEntity
+from rdflib.plugins.sparql.processor import prepareQuery
+from rdflib.plugins.sparql.sparql import Query
+from rdflib.plugins.sparql.sparql import Prologue
+from rdflib.plugins.sparql.parserutils import CompValue
 
 CONFIG_PATH = "./config.json"
 
@@ -31,75 +37,63 @@ class Sparql:
         the path of a configuration file, whose default location is "./config.json"
         """
         self.config_path = config_path
-        self.endpoints:list = File_manager.import_json(path=self.config_path)["triplestore_url"]
-        self.file_paths:list = File_manager.import_json(path=self.config_path)["file_path"]
+        self.config:list = File_manager.import_json(path=self.config_path)
     
-    def execute_query(self, query:str) -> Union[Set[Tuple[URIRef, URIRef]], Graph]:
-        if "select" in query.lower():
-            output = set()
-            format = JSON
-            if len(self.endpoints) > 0:
-                output.update(self._query_endpoints(query, format=format))
-            if len(self.file_paths) > 0:
-                output.update(self._query_files(query, format=format))
-        elif "construct" in query.lower():
-            output = Graph()
-            format = RDFXML
-            if len(self.endpoints) > 0:
-                output += self._query_endpoints(query, format=format)
-            if len(self.file_paths) > 0:
-                output += self._query_files(query, format=format)
-        if "limit" in query.lower():
-            limit = int(re.search("(?:limit\s*)(\d+)", query, re.IGNORECASE).group(1))
-            if format == JSON:
-                output = set(itertools.islice(output, limit))
-            elif format == RDFXML:
-                new_output = Graph()
-                for triple in list(output.triples((None, None, None)))[:limit]:
-                    new_output.add(triple)
-                output = new_output
-        return output
+    def _run_the_query(self, query:str):
+        cg = ConjunctiveGraph()
+        if ProvEntity.PROV in query:
+            storer:dict = self.config["provenance"]
+        else:
+            storer:dict = self.config["dataset"]
+        if len(storer["file_paths"]) > 0:
+            results = self._query_files(query, storer)
+            for quad in results.quads():
+                cg.add(quad)
+        if len(storer["triplestore_urls"]) > 0:
+            results = self._query_triplestores(query, storer)
+            for quad in results.quads():
+                cg.add(quad)
+        return cg
     
-    def _query_endpoints(self, 
-            query:str, 
-            format:Union[RDFXML, JSON]) -> Union[Set[Tuple[URIRef, URIRef]], Graph]:
-        if format == RDFXML:
-            output = Graph()
-        elif format == JSON:
-            output = set()
-        for endpoint in self.endpoints:
-            sparql = SPARQLWrapper(endpoint=endpoint)
-            sparql.setQuery(query)
-            # POST is required to avoid the query length limit imposed by the GET method
-            sparql.setMethod(POST)
-            sparql.setReturnFormat(format)
-            results = sparql.queryAndConvert()
-            if format == JSON:
-                for result_dict in results["results"]["bindings"]:
-                    output.add(tuple(d["value"] for d in result_dict.values()))
-            elif format == RDFXML:
-                output += results
-        return output
-    
-    def _query_files(self, 
-            query:str, 
-            format:Union[RDFXML, JSON]) -> Union[Set[Tuple[URIRef, URIRef]], Graph]:
-        g = Graph()
-        if format == RDFXML:
-            output = Graph()
-        elif format == JSON:
-            output = set()
-        for file_path in self.file_paths:
-            g += Reader().load(file_path)
-        results = g.query(query)
-        if format == RDFXML:
-            output += results
-        elif format == JSON:
-            for tuple in results:
-                output.add(tuple)
-        return output
+    @classmethod
+    def _query_files(cls, query:str, storer:dict) -> ConjunctiveGraph:
+        cg = ConjunctiveGraph()
+        storer = storer["file_paths"]
+        for file_path in storer:
+            file_cg = ConjunctiveGraph()
+            file_cg.parse(location=file_path, format="json-ld")
+            results = file_cg.query(query)
+            for result in results:
+                cg.add(result)
+        return cg
 
-query = "SELECT ?s ?p ?o WHERE {?s ?p ?o; a <http://www.w3.org/ns/prov#Entity>} LIMIT 10"
-output = Sparql().execute_query(query=query)
-print(len(output))
-print(output)
+    @classmethod
+    def _query_triplestores(cls, query:str, storer:dict) -> ConjunctiveGraph:
+        cg = ConjunctiveGraph()
+        storer = storer["triplestore_urls"]
+        prepare_query:Query = prepareQuery(query)
+        algebra:CompValue = prepare_query.algebra
+        for url in storer:
+            sparql = SPARQLWrapper(url)
+            sparql.setMethod(POST)
+            sparql.setQuery(query)
+            if algebra.name == "SelectQuery":
+                sparql.setReturnFormat(JSON)
+                results = sparql.queryAndConvert()
+                for quad in results["results"]["bindings"]:
+                    quad_to_add = list()
+                    for var in results["head"]["vars"]:
+                        if quad[var]["type"] == "uri":
+                            quad_to_add.append(URIRef(quad[var]["value"]))
+                        elif quad[var]["type"] == "literal":
+                            quad_to_add.append(Literal(quad[var]["value"]))
+                    cg.add(tuple(quad_to_add))
+            elif algebra.name == "ConstructQuery":
+                sparql.setReturnFormat(RDFXML)
+                cg += sparql.queryAndConvert()            
+        return cg
+        
+
+
+    
+
