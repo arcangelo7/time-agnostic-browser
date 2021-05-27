@@ -18,13 +18,13 @@ from typing import Set, Tuple
 
 from SPARQLWrapper import SPARQLWrapper, POST, RDFXML, JSON
 from rdflib import ConjunctiveGraph
-from rdflib.plugins.sparql import algebra
 from rdflib.term import URIRef, Literal
 from support import File_manager
 from prov_entity import ProvEntity
 from rdflib.plugins.sparql.processor import prepareQuery
 from rdflib.plugins.sparql.sparql import Query
 from rdflib.plugins.sparql.parserutils import CompValue
+
 
 CONFIG_PATH = "./config.json"
 
