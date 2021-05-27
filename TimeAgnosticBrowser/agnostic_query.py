@@ -14,24 +14,47 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 
-from typing import List, Tuple, Dict
-from datetime import datetime
+from typing import List, Tuple, Dict, Set
 
-from rdflib.graph import ConjunctiveGraph, Graph
+from datetime import datetime
+from rdflib.graph import ConjunctiveGraph
+from rdflib.term import URIRef
 from sparql import Sparql
-from SPARQLWrapper import XML, JSON
 from prov_entity import ProvEntity
-import copy
+import copy, validators
 from rdflib.plugins.sparql.processor import processUpdate
-from pprint import pprint
+from rdflib.plugins.sparql.processor import prepareQuery
+from rdflib.plugins.sparql.sparql import Query
+from rdflib.plugins.sparql.parserutils import CompValue
+
 
 class Agnostic_query:
-    def __init__(self, query=""):
+    def __init__(self, query:str):
         self.query = query
-        self.entities_provenance = dict()
+        prepare_query:Query = prepareQuery(self.query)
+        algebra:CompValue = prepare_query.algebra
+        if algebra.name != "SelectQuery":
+            raise ValueError("Only SELECT queries are allowed")
+    
+    def run_agnostic_query(self, base_uri:str, related_entities_history:bool=False) -> Tuple[Set[Tuple], Dict[str, Dict[str, ConjunctiveGraph]]]:
+        user_query_results = Sparql().run_select_query(self.query)
+        entities = set()
+        for result in user_query_results:
+            for x in result:
+                if base_uri in x:
+                    entities.add(str(x))
+        entities_histories = self.get_entities_histories(entities, related_entities_history)
+        return user_query_results, entities_histories
+    
+    @classmethod
+    def get_entities_histories(cls, res_set:set, related_entities_history:bool=False) -> Dict[str, Dict[str, ConjunctiveGraph]]:
+        entities_histories = dict()
+        for res in res_set:
+            entities_histories.update(cls.get_entity_history(res, related_entities_history))
+        return entities_histories
 
     @classmethod
-    def get_entity_history(cls, res:str) -> Dict[str, Dict[str, Graph]]:
+    def get_entity_history(cls, res:str, related_entities_history:bool=False) -> Dict[str, Dict[str, ConjunctiveGraph]]:
         """
         Given the URI of a resource, it reconstructs its entire history, 
         returning a dictionary according to the following model:
@@ -46,10 +69,18 @@ class Agnostic_query:
         the entity as subject plus the provenance information present at time t 
         (not all existing ones, only those existing at that given instant).
         """
+        if related_entities_history:
+            entities_to_query = {res}
+            current_state = cls._query_dataset(res, related_entities_history)
+            related_entities = current_state.triples((None, None, URIRef(res)))
+            for entity in related_entities:
+                if ProvEntity.PROV not in entity[1]:
+                    entities_to_query.add(str(entity[0]))
+            return cls.get_entities_histories(entities_to_query)
         entity_history = cls._get_entity_current_state(res)
         entity_history = cls._get_old_graphs(entity_history, res)
         return entity_history
-
+    
     @classmethod
     def _get_entity_current_state(cls, res:str) -> Dict[str, Dict[str, ConjunctiveGraph]]:
         """
@@ -109,22 +140,46 @@ class Agnostic_query:
                 processUpdate(previous_graph, snapshot_update_query)
                 previous_graph.remove((snapshot_uri, None, None))
                 entity_current_state[res][date_graph[0]] = previous_graph
+        for time in list(entity_current_state[res]):
+            entity_current_state[res][str(time)] = entity_current_state[res].pop(time)
         return entity_current_state
     
     @classmethod
-    def _query_dataset(cls, res:str) -> ConjunctiveGraph:
-        query_dataset = f"""
-            SELECT ?s ?p ?o ?c
-            WHERE {{
-                GRAPH ?c {{?s ?p ?o}}
-                VALUES ?s {{<{res}>}}
-            }}   
-        """
-        results = Sparql()._run_the_query(query_dataset)
-        return results
+    def _query_dataset(cls, res:str, related_entities_history:bool=False) -> ConjunctiveGraph:
+        # A SELECT hack can be used to return RDF quads in named graphs, 
+        # since the CONSTRUCT allows only to return triples in SPARQL 1.1.
+        # Here is an exemple of SELECT hack:
+        #
+        # SELECT ?s ?p ?o ?c
+        # WHERE {
+        #     GRAPH ?c {?s ?p ?o}
+        #     VALUES ?s {<{res}>}
+        # }}
+        #
+        # Aftwerwards, the rdflib add method can be used to add quads to a Conjunctive Graph, 
+        # where the fourth element is the context.    
+        if related_entities_history:       
+            query_dataset = f"""
+                SELECT ?s ?p ?o ?c
+                WHERE {{
+                    GRAPH ?c {{?s ?p ?o}}
+                    {{VALUES ?s {{<{res}>}}}}
+                    UNION 
+                    {{VALUES ?o {{<{res}>}}}}
+                }}   
+            """
+        else:
+            query_dataset = f"""
+                SELECT ?s ?p ?o ?c
+                WHERE {{
+                    GRAPH ?c {{?s ?p ?o}}
+                    VALUES ?s {{<{res}>}} 
+                }}   
+            """
+        return Sparql().run_construct_query(query_dataset)
     
     @classmethod
-    def _query_provenance(cls, res:str) -> ConjunctiveGraph:
+    def _query_provenance(cls, res) -> ConjunctiveGraph:
         query_provenance = f"""
             CONSTRUCT {{
                 ?snapshot <{ProvEntity.iri_generated_at_time}> ?t;      
@@ -138,8 +193,7 @@ class Agnostic_query:
                 }}   
             }}
         """
-        results = Sparql()._run_the_query(query_provenance)
-        return results
+        return Sparql().run_construct_query(query_provenance)
     
     @classmethod
     def _convert_to_datetime(cls, time_string:str) -> datetime:

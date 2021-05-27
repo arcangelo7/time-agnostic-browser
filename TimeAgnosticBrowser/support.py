@@ -14,13 +14,8 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 
-from typing import Union
 import json, os, zipfile
-from SPARQLWrapper import SPARQLWrapper, XML, POST
-from SPARQLWrapper.Wrapper import RDFXML, N3
-from rdflib import Graph
 from zipfile import ZipFile
-from oc_ocdm import Reader
 
 
 class File_manager:

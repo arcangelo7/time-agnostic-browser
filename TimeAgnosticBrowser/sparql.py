@@ -14,18 +14,16 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 
-from typing import Union, Set, Tuple
+from typing import Set, Tuple
 
-import re, itertools, rdflib
-from SPARQLWrapper import SPARQLWrapper, POST, RDFXML, JSON, N3, XML
-from rdflib import Graph, ConjunctiveGraph
-from oc_ocdm import Reader
+from SPARQLWrapper import SPARQLWrapper, POST, RDFXML, JSON
+from rdflib import ConjunctiveGraph
+from rdflib.plugins.sparql import algebra
 from rdflib.term import URIRef, Literal
 from support import File_manager
 from prov_entity import ProvEntity
 from rdflib.plugins.sparql.processor import prepareQuery
 from rdflib.plugins.sparql.sparql import Query
-from rdflib.plugins.sparql.sparql import Prologue
 from rdflib.plugins.sparql.parserutils import CompValue
 
 CONFIG_PATH = "./config.json"
@@ -39,24 +37,64 @@ class Sparql:
         self.config_path = config_path
         self.config:list = File_manager.import_json(path=self.config_path)
     
-    def _run_the_query(self, query:str):
+    def run_select_query(self, query:str) -> Set[Tuple]:
+        output = set()
+        if ProvEntity.PROV in query:
+            storer:dict = self.config["provenance"]
+        else:
+            storer:dict = self.config["dataset"]
+        if storer["file_paths"]:
+            output.update(self._get_tuples_from_files(query, storer))
+        if storer["triplestore_urls"]:
+            output.update(self._get_tuples_from_triplestores(query, storer))
+        output = set(self._cut_by_limit(query, list(output)))
+        return output
+
+    @classmethod
+    def _get_tuples_from_files(cls, query:str, storer:list) -> Set[Tuple]:
+        output = set()
+        storer = storer["file_paths"]
+        for file_path in storer:
+            file_cg = ConjunctiveGraph()
+            file_cg.parse(location=file_path, format="json-ld")
+            results = file_cg.query(query)
+            for result in results:
+                output.add(result)
+        return output
+    
+    @classmethod
+    def _get_tuples_from_triplestores(cls, query:dict, storer:list) -> Set[Tuple]:
+        output = set()
+        storer = storer["triplestore_urls"]
+        for url in storer:
+            sparql = SPARQLWrapper(url)
+            sparql.setMethod(POST)
+            sparql.setQuery(query)
+            sparql.setReturnFormat(JSON)
+            results = sparql.queryAndConvert()
+            for result_dict in results["results"]["bindings"]:
+                output.add(tuple(d["value"] for d in result_dict.values()))
+        return output
+        
+    def run_construct_query(self, query:str) -> ConjunctiveGraph:
         cg = ConjunctiveGraph()
         if ProvEntity.PROV in query:
             storer:dict = self.config["provenance"]
         else:
             storer:dict = self.config["dataset"]
-        if len(storer["file_paths"]) > 0:
-            results = self._query_files(query, storer)
+        if storer["file_paths"]:
+            results = self._get_graph_from_files(query, storer)
             for quad in results.quads():
                 cg.add(quad)
-        if len(storer["triplestore_urls"]) > 0:
-            results = self._query_triplestores(query, storer)
+        if storer["triplestore_urls"]:
+            results = self._get_graph_from_triplestores(query, storer)
             for quad in results.quads():
                 cg.add(quad)
+        cg = self._cut_by_limit(query, cg)
         return cg
     
     @classmethod
-    def _query_files(cls, query:str, storer:dict) -> ConjunctiveGraph:
+    def _get_graph_from_files(cls, query:str, storer:dict) -> ConjunctiveGraph:
         cg = ConjunctiveGraph()
         storer = storer["file_paths"]
         for file_path in storer:
@@ -68,7 +106,7 @@ class Sparql:
         return cg
 
     @classmethod
-    def _query_triplestores(cls, query:str, storer:dict) -> ConjunctiveGraph:
+    def _get_graph_from_triplestores(cls, query:str, storer:dict) -> ConjunctiveGraph:
         cg = ConjunctiveGraph()
         storer = storer["triplestore_urls"]
         prepare_query:Query = prepareQuery(query)
@@ -77,6 +115,18 @@ class Sparql:
             sparql = SPARQLWrapper(url)
             sparql.setMethod(POST)
             sparql.setQuery(query)
+            # A SELECT hack can be used to return RDF quads in named graphs, 
+            # since the CONSTRUCT allows only to return triples in SPARQL 1.1.
+            # Here is an exemple of SELECT hack
+            #
+            # SELECT ?s ?p ?o ?c
+            # WHERE {
+            #     GRAPH ?c {?s ?p ?o}
+            #     VALUES ?s {<{res}>}
+            # }}
+            #
+            # Aftwerwards, the rdflib add method can be used to add quads to a Conjunctive Graph, 
+            # where the fourth element is the context.    
             if algebra.name == "SelectQuery":
                 sparql.setReturnFormat(JSON)
                 results = sparql.queryAndConvert()
@@ -92,6 +142,14 @@ class Sparql:
                 sparql.setReturnFormat(RDFXML)
                 cg += sparql.queryAndConvert()            
         return cg
+    
+    @classmethod
+    def _cut_by_limit(cls, query, input):
+        algebra:CompValue = prepareQuery(query).algebra
+        if "length" in algebra["p"]:
+            limit = int(algebra["p"]["length"])
+            input = input[:limit]
+        return input
         
 
 
