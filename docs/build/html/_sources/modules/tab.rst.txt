@@ -1,0 +1,53 @@
+tab package
+===========
+
+Submodules
+----------
+
+tab.agnostic\_entity module
+---------------------------
+
+.. automodule:: tab.agnostic_entity
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tab.agnostic\_query module
+--------------------------
+
+.. automodule:: tab.agnostic_query
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tab.prov\_entity module
+-----------------------
+
+.. automodule:: tab.prov_entity
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tab.sparql module
+-----------------
+
+.. automodule:: tab.sparql
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tab.support module
+------------------
+
+.. automodule:: tab.support
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: tab
+   :members:
+   :undoc-members:
+   :show-inheritance:

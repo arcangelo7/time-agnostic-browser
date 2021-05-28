@@ -1,0 +1,53 @@
+time\-agnostic\-browser package
+===============================
+
+Submodules
+----------
+
+time\-agnostic\-browser.agnostic\_entity module
+-----------------------------------------------
+
+.. automodule:: time-agnostic-browser.agnostic_entity
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+time\-agnostic\-browser.agnostic\_query module
+----------------------------------------------
+
+.. automodule:: time-agnostic-browser.agnostic_query
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+time\-agnostic\-browser.prov\_entity module
+-------------------------------------------
+
+.. automodule:: time-agnostic-browser.prov_entity
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+time\-agnostic\-browser.sparql module
+-------------------------------------
+
+.. automodule:: time-agnostic-browser.sparql
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+time\-agnostic\-browser.support module
+--------------------------------------
+
+.. automodule:: time-agnostic-browser.support
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: time-agnostic-browser
+   :members:
+   :undoc-members:
+   :show-inheritance:
