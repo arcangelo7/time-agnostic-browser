@@ -179,7 +179,8 @@ class Agnostic_entity:
         """
         return Sparql().run_construct_query(query_provenance)
     
-    def _convert_to_datetime(self, time_string:str) -> datetime:
+    @classmethod
+    def _convert_to_datetime(cls, time_string:str) -> datetime:
         return datetime.strptime(time_string, "%Y-%m-%dT%H:%M:%S%z")
 
 def get_entities_histories(res_set:Set[str], related_entities_history=False) -> Dict[str, Dict[str, ConjunctiveGraph]]:

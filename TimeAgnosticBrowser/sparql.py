@@ -35,7 +35,7 @@ class Sparql:
         the path of a configuration file, whose default location is "./config.json"
         """
         self.config_path = config_path
-        self.config:list = File_manager.import_json(path=self.config_path)
+        self.config:list = File_manager(self.config_path).import_json()
     
     def run_select_query(self, query:str) -> Set[Tuple]:
         output = set()
@@ -59,7 +59,8 @@ class Sparql:
             file_cg.parse(location=file_path, format="json-ld")
             results = file_cg.query(query)
             for result in results:
-                output.add(result)
+                result_tuple = tuple(str(var) for var in result)
+                output.add(result_tuple)
         return output
     
     @classmethod

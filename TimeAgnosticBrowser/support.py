@@ -14,38 +14,57 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 
+from typing import Dict
+
 import json, os, zipfile
 from zipfile import ZipFile
+from rdflib.graph import ConjunctiveGraph
 
 
 class File_manager:
-    @classmethod
-    def import_json(cls, path:str) -> dict:
-        with open(path, encoding="utf8") as json_file:
+    def __init__(self, path:str):
+        self.path = path
+        
+    def import_json(self) -> dict:
+        with open(self.path, encoding="utf8") as json_file:
             return json.load(json_file)
 
-    @classmethod
-    def _zipdir(cls, path:str, ziph:ZipFile) -> None:
-        for root, dirs, files in os.walk(path):
+    def _zipdir(self, ziph:ZipFile) -> None:
+        for root, dirs, files in os.walk(self.path):
             dirs[:] = [d for d in dirs if d != "small"]
             for file in files:
-                ziph.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), os.path.join(path, '..')))
+                ziph.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), os.path.join(self.path, '..')))
     
-    @classmethod
-    def zip_data(cls, path:str) -> None:
+    def zip_data(self) -> None:
         zipf = zipfile.ZipFile('output.zip', 'w', zipfile.ZIP_DEFLATED)
-        cls._zipdir(path, zipf)
+        self._zipdir(self.path, zipf)
         zipf.close()
 
-    @classmethod
-    def minify_json(cls, path:str) -> None:
-        print(f"[Support: INFO] Minifing file {path}")
-        file_data = open(path, "r", encoding="utf-8").read()
+    def minify_json(self) -> None:
+        print(f"[Support: INFO] Minifing file {self.path}")
+        file_data = open(self.path, "r", encoding="utf-8").read()
         json_data = json.loads(file_data) 
         json_string = json.dumps(json_data, separators=(',', ":")) 
-        path = str(path).replace(".json", "")
+        path = str(self.path).replace(".json", "")
         new_path = "{0}_minify.json".format(path)
         open(new_path, "w+", encoding="utf-8").write(json_string) 
+
+def _to_nt_sorted_list(cg:ConjunctiveGraph) -> list:
+    if cg is None:
+        return None
+    nt_list = str(cg.serialize(format="nt")).split(".\\n")
+    sorted_nt_list = sorted([triple.replace("b\'", "").strip() for triple in nt_list if triple != "\\n'"])
+    return sorted_nt_list
+
+def _to_dict_of_nt_sorted_lists(dictionary:Dict[str, Dict[str, ConjunctiveGraph]]) -> dict:
+    for key, value in dictionary.items():
+        if isinstance(value, ConjunctiveGraph):
+            dictionary[key] = _to_nt_sorted_list(value)
+        else:
+            for snapshot, cg in value.items():
+                value[snapshot] = _to_nt_sorted_list(cg)
+    return dictionary
+
 
 
 
