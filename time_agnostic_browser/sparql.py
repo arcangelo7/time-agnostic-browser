@@ -19,11 +19,12 @@ from typing import Set, Tuple
 from SPARQLWrapper import SPARQLWrapper, POST, RDFXML, JSON
 from rdflib import ConjunctiveGraph
 from rdflib.term import URIRef, Literal
-from support import File_manager
-from prov_entity import ProvEntity
 from rdflib.plugins.sparql.processor import prepareQuery
 from rdflib.plugins.sparql.sparql import Query
 from rdflib.plugins.sparql.parserutils import CompValue
+
+from time_agnostic_browser.support import File_manager
+from time_agnostic_browser.prov_entity import ProvEntity
 
 
 CONFIG_PATH = "./config.json"

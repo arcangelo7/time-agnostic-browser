@@ -15,16 +15,15 @@
 # SOFTWARE.
 
 from pprint import pprint
-from typing import List, Tuple, Dict, Set, Union
-
+from typing import List, Tuple, Dict, Set
 from datetime import datetime
 from rdflib.graph import ConjunctiveGraph
 from rdflib.term import URIRef
-from sparql import Sparql
-from prov_entity import ProvEntity
 import copy
 from rdflib.plugins.sparql.processor import processUpdate
 
+from time_agnostic_browser.sparql import Sparql
+from time_agnostic_browser.prov_entity import ProvEntity
 
 class Agnostic_entity:
     def __init__(self, res:str, related_entities_history:bool=False):

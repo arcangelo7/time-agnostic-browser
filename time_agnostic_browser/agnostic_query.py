@@ -19,8 +19,9 @@ from typing import Set, Tuple, Dict
 from rdflib.plugins.sparql.processor import prepareQuery
 from rdflib.plugins.sparql.sparql import Query
 from rdflib.plugins.sparql.parserutils import CompValue
-from sparql import Sparql
 from rdflib import ConjunctiveGraph
+
+from time_agnostic_browser.sparql import Sparql
 
 
 class Agnostic_query:

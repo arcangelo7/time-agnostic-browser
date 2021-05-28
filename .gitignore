@@ -2,6 +2,7 @@
 /db
 /.vscode
 /test/blazegraph.jnl
+setup.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
