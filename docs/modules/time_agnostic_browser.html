@@ -175,41 +175,116 @@
 <div class="section" id="module-time_agnostic_browser.agnostic_entity">
 <span id="time-agnostic-browser-agnostic-entity-module"></span><h2>time_agnostic_browser.agnostic_entity module<a class="headerlink" href="#module-time_agnostic_browser.agnostic_entity" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="time_agnostic_browser.agnostic_entity.Agnostic_entity">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">time_agnostic_browser.agnostic_entity.</span></code><code class="sig-name descname"><span class="pre">Agnostic_entity</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">related_entities_history</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#time_agnostic_browser.agnostic_entity.Agnostic_entity" title="Permalink to this definition">¶</a></dt>
+<dt id="time_agnostic_browser.agnostic_entity.AgnosticEntity">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">time_agnostic_browser.agnostic_entity.</span></code><code class="sig-name descname"><span class="pre">AgnosticEntity</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">related_entities_history</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#time_agnostic_browser.agnostic_entity.AgnosticEntity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt id="time_agnostic_browser.agnostic_entity.Agnostic_entity.get_history">
-<code class="sig-name descname"><span class="pre">get_history</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">rdflib.graph.ConjunctiveGraph</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#time_agnostic_browser.agnostic_entity.Agnostic_entity.get_history" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given the URI of a resource, it reconstructs its entire history, 
-returning a dictionary according to the following model:
-{</p>
-<blockquote>
-<div><dl class="simple">
-<dt>“entity_URI”: {</dt><dd><p>“time_snapshot_1”: graph_at_time_1,
-“time_snapshot_2”: graph_at_time_2,
-“time_snapshot_n”: graph_at_time_n</p>
+<p>An entity you want to obtain information about.
+Not only the present ones, but also the past ones, 
+based on the snapshots available for that entity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>res</strong> (<em>str.</em>) – The URI of the entity.</p></li>
+<li><p><strong>related_entities_history</strong> (<em>bool.</em>) – True if you also want to return information on related entities, that is, the ones that have the URI of the res parameter as object, False otherwise. The default is False.</p></li>
+</ul>
 </dd>
 </dl>
-<p>}</p>
-</div></blockquote>
-<p>}
-What is meant by graph? By graph we mean all the triples that have 
+<dl class="py method">
+<dt id="time_agnostic_browser.agnostic_entity.AgnosticEntity.get_history">
+<code class="sig-name descname"><span class="pre">get_history</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">rdflib.graph.ConjunctiveGraph</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#time_agnostic_browser.agnostic_entity.AgnosticEntity.get_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the URI of a resource, it reconstructs its entire history, 
+returning a dictionary according to the following model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;entity_URI&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;time_snapshot_1&quot;</span><span class="p">:</span> <span class="n">graph_at_time_1</span><span class="p">,</span>
+        <span class="s2">&quot;time_snapshot_2&quot;</span><span class="p">:</span> <span class="n">graph_at_time_2</span><span class="p">,</span>
+        <span class="s2">&quot;time_snapshot_n&quot;</span><span class="p">:</span> <span class="n">graph_at_time_n</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>What is meant by graph? By graph we mean all the triples that have 
 the entity as subject plus the provenance information present at time t 
-(not all existing ones, only those existing at that given instant).</p>
+(not all existing ones, only those existing at that given instant).
+If the object of type AgnosticEntity has been instantiated by passing the 
+related_entities_history parameter as True, the graph also contains the related entities, 
+that is, those that have the entity as an object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dict[str, Dict[str, ConjunctiveGraph]] – A dictionary containing the graphs related to each considered entities in each of the existing snapshots of these entities.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="time_agnostic_browser.agnostic_entity.Agnostic_entity.get_state_at_time">
-<code class="sig-name descname"><span class="pre">get_state_at_time</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Dict</span><a class="headerlink" href="#time_agnostic_browser.agnostic_entity.Agnostic_entity.get_state_at_time" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="time_agnostic_browser.agnostic_entity.AgnosticEntity.get_state_at_time">
+<code class="sig-name descname"><span class="pre">get_state_at_time</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Dict</span><a class="headerlink" href="#time_agnostic_browser.agnostic_entity.AgnosticEntity.get_state_at_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a time, the function returns the resource’s state at that time 
+and the hooks to the previous and subsequent states. 
+Specifically, a dictionary is returned according to the following pattern:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="n">Graph</span> <span class="n">at</span> <span class="n">time</span> <span class="n">t</span>
+    <span class="s2">&quot;before&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;t-1&quot;</span><span class="p">:</span> <span class="n">Graph</span> <span class="n">at</span> <span class="n">time</span> <span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;t-n&quot;</span><span class="p">:</span> <span class="n">Graph</span> <span class="n">at</span> <span class="n">time</span> <span class="n">t</span><span class="o">-</span><span class="n">n</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;after&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;t+1&quot;</span><span class="p">:</span> <span class="n">Graph</span> <span class="n">at</span> <span class="n">time</span> <span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;t+n&quot;</span><span class="p">:</span> <span class="n">Graph</span> <span class="n">at</span> <span class="n">time</span> <span class="n">t</span><span class="o">+</span><span class="n">n</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>str.</em>) – The snapshot time for the resource to be returned.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dict – A dictionary containing the resource at time t and hooks to the previous and subsequent states of the resource.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt id="time_agnostic_browser.agnostic_entity.get_entities_histories">
 <code class="sig-prename descclassname"><span class="pre">time_agnostic_browser.agnostic_entity.</span></code><code class="sig-name descname"><span class="pre">get_entities_histories</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res_set</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">related_entities_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">rdflib.graph.ConjunctiveGraph</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#time_agnostic_browser.agnostic_entity.get_entities_histories" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Given a set of entities URIs it returns the history of those entities. 
+You can also specify via the related_entities_history parameter
+if you are also interested in the history of related entities.
+It returns a dictionary according to the following model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;entity_1_URI&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;time_snapshot_1&quot;</span><span class="p">:</span> <span class="n">graph_at_time_1</span><span class="p">,</span>
+        <span class="s2">&quot;time_snapshot_2&quot;</span><span class="p">:</span> <span class="n">graph_at_time_2</span><span class="p">,</span>
+        <span class="s2">&quot;time_snapshot_n&quot;</span><span class="p">:</span> <span class="n">graph_at_time_n</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;entity_2_URI&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;time_snapshot_1&quot;</span><span class="p">:</span> <span class="n">graph_at_time_1</span><span class="p">,</span>
+        <span class="s2">&quot;time_snapshot_2&quot;</span><span class="p">:</span> <span class="n">graph_at_time_2</span><span class="p">,</span>
+        <span class="s2">&quot;time_snapshot_n&quot;</span><span class="p">:</span> <span class="n">graph_at_time_n</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;entity_n_URI&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;time_snapshot_1&quot;</span><span class="p">:</span> <span class="n">graph_at_time_1</span><span class="p">,</span>
+        <span class="s2">&quot;time_snapshot_2&quot;</span><span class="p">:</span> <span class="n">graph_at_time_2</span><span class="p">,</span>
+        <span class="s2">&quot;time_snapshot_n&quot;</span><span class="p">:</span> <span class="n">graph_at_time_n</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>res_set</strong> (<em>set.</em>) – A set of the entities URI you want to retrieve the history about.</p></li>
+<li><p><strong>related_entities_history</strong> (<em>bool.</em>) – True if you also want to return information on related entities, that is, the ones that have the URIs in the res_set parameter as object, False otherwise. The default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dict[str, Dict[str, ConjunctiveGraph]] – A dictionary containing the graphs related to each considered entities in each of the existing snapshots of these entities.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="module-time_agnostic_browser.agnostic_query">
@@ -305,15 +380,57 @@ organisation or automated process that created or modified the entity metadata.<
 <dt id="time_agnostic_browser.sparql.Sparql">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">time_agnostic_browser.sparql.</span></code><code class="sig-name descname"><span class="pre">Sparql</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'./config.json'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#time_agnostic_browser.sparql.Sparql" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The Sparql class handles SPARQL queries.
+It is instantiated by passing as a parameter 
+the path to a configuration file, whose default location is “./config.json”.
+The configuration file must be in JSON format and contain information on the sources to be queried. 
+There are two types of sources, dataset sources and provenance sources, and they need to be specified separately. 
+Each must contain the URLs of the triplestore on which to search for information and/or the paths of the files that 
+contain the information. The files must be in JSON format. Here is an example of the configuration file content:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;dataset&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;triplestore_urls&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;http://localhost:9999/blazegraph/sparql&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;file_paths&quot;</span><span class="p">:</span> <span class="p">[]</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;provenance&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;triplestore_urls&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;file_paths&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;./test/scientometrics_prov.json&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>            
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config_path</strong> (<em>str.</em>) – The path to the configuration file.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="time_agnostic_browser.sparql.Sparql.run_construct_query">
 <code class="sig-name descname"><span class="pre">run_construct_query</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">rdflib.graph.ConjunctiveGraph</span><a class="headerlink" href="#time_agnostic_browser.sparql.Sparql.run_construct_query" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Given a CONSTRUCT query, it returns the results in a ConjunctiveGraph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>query</strong> (<em>str.</em>) – A CONSTRUCT query.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ConjunctiveGraph – A ConjunctiveGraph containing the results of the query.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="time_agnostic_browser.sparql.Sparql.run_select_query">
 <code class="sig-name descname"><span class="pre">run_select_query</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#time_agnostic_browser.sparql.Sparql.run_select_query" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Given a SELECT query, it returns the results in a set of tuples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>query</strong> (<em>str.</em>) – A SELECT query.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Set[Tuple] – A set of tuples, in which the positional value of the tuples corresponds to the positional value of the variables indicated in the query.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -321,23 +438,47 @@ organisation or automated process that created or modified the entity metadata.<
 <div class="section" id="module-time_agnostic_browser.support">
 <span id="time-agnostic-browser-support-module"></span><h2>time_agnostic_browser.support module<a class="headerlink" href="#module-time_agnostic_browser.support" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="time_agnostic_browser.support.File_manager">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">time_agnostic_browser.support.</span></code><code class="sig-name descname"><span class="pre">File_manager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#time_agnostic_browser.support.File_manager" title="Permalink to this definition">¶</a></dt>
+<dt id="time_agnostic_browser.support.FileManager">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">time_agnostic_browser.support.</span></code><code class="sig-name descname"><span class="pre">FileManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#time_agnostic_browser.support.FileManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Convenient class for file management.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str.</em>) – The path to a file.</p>
+</dd>
+</dl>
 <dl class="py method">
-<dt id="time_agnostic_browser.support.File_manager.import_json">
-<code class="sig-name descname"><span class="pre">import_json</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="headerlink" href="#time_agnostic_browser.support.File_manager.import_json" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="time_agnostic_browser.support.FileManager.import_json">
+<code class="sig-name descname"><span class="pre">import_json</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="headerlink" href="#time_agnostic_browser.support.FileManager.import_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import a JSON file as a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dict – A dictionary representing the imported JSON file.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
-<dt id="time_agnostic_browser.support.File_manager.minify_json">
-<code class="sig-name descname"><span class="pre">minify_json</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#time_agnostic_browser.support.File_manager.minify_json" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="time_agnostic_browser.support.FileManager.minify_json">
+<code class="sig-name descname"><span class="pre">minify_json</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#time_agnostic_browser.support.FileManager.minify_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minify a JSON file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None – The output can be found under the same name of the input + “_min.json” in the same folder of the input file.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
-<dt id="time_agnostic_browser.support.File_manager.zip_data">
-<code class="sig-name descname"><span class="pre">zip_data</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#time_agnostic_browser.support.File_manager.zip_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="time_agnostic_browser.support.FileManager.zip_data">
+<code class="sig-name descname"><span class="pre">zip_data</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#time_agnostic_browser.support.FileManager.zip_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Zip a file as “output.zip” to the script execution path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None – The output can be found under the name “output.zip” in the execution path of the Python script.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

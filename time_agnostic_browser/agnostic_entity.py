@@ -25,7 +25,18 @@ from rdflib.plugins.sparql.processor import processUpdate
 from time_agnostic_browser.sparql import Sparql
 from time_agnostic_browser.prov_entity import ProvEntity
 
-class Agnostic_entity:
+class AgnosticEntity:
+    """
+    An entity you want to obtain information about.
+    Not only the present ones, but also the past ones, 
+    based on the snapshots available for that entity.
+    
+    :param res: The URI of the entity.
+    :type res: str.
+    :param related_entities_history: True if you also want to return information on related entities, that is, the ones that have the URI of the res parameter as object, False otherwise. The default is False. 
+    :type related_entities_history: bool.
+    """
+
     def __init__(self, res:str, related_entities_history:bool=False):
         self.res = res
         self.related_entities_history = related_entities_history
@@ -33,17 +44,24 @@ class Agnostic_entity:
     def get_history(self) -> Dict[str, Dict[str, ConjunctiveGraph]]:
         """
         Given the URI of a resource, it reconstructs its entire history, 
-        returning a dictionary according to the following model:
-        {
-            "entity_URI": {
-                "time_snapshot_1": graph_at_time_1,
-                "time_snapshot_2": graph_at_time_2,
-                "time_snapshot_n": graph_at_time_n
+        returning a dictionary according to the following model: ::
+
+            {
+                "entity_URI": {
+                    "time_snapshot_1": graph_at_time_1,
+                    "time_snapshot_2": graph_at_time_2,
+                    "time_snapshot_n": graph_at_time_n
+                }
             }
-        }
+
         What is meant by graph? By graph we mean all the triples that have 
         the entity as subject plus the provenance information present at time t 
         (not all existing ones, only those existing at that given instant).
+        If the object of type AgnosticEntity has been instantiated by passing the 
+        related_entities_history parameter as True, the graph also contains the related entities, 
+        that is, those that have the entity as an object.
+
+        :returns:  Dict[str, Dict[str, ConjunctiveGraph]] -- A dictionary containing the graphs related to each considered entities in each of the existing snapshots of these entities.
         """
         if self.related_entities_history:
             entities_to_query = {self.res}
@@ -58,6 +76,27 @@ class Agnostic_entity:
         return entity_history
     
     def get_state_at_time(self, time:str) -> Dict:
+        """
+        Given a time, the function returns the resource's state at that time 
+        and the hooks to the previous and subsequent states. 
+        Specifically, a dictionary is returned according to the following pattern: ::
+
+            {
+                "t": Graph at time t
+                "before": {
+                    "t-1": Graph at time t-1,
+                    "t-n": Graph at time t-n
+                }, 
+                "after": {
+                    "t+1": Graph at time t+1,
+                    "t+n": Graph at time t+n
+                }
+            }
+
+        :param time: The snapshot time for the resource to be returned.
+        :type time: str.
+        :returns:  dict -- A dictionary containing the resource at time t and hooks to the previous and subsequent states of the resource.
+        """
         entity_at_time = {time: None, "before": dict(), "after": dict()}
         entity_history = self.get_history()
         for snapshot in entity_history[self.res]:
@@ -183,10 +222,40 @@ class Agnostic_entity:
         return datetime.strptime(time_string, "%Y-%m-%dT%H:%M:%S%z")
 
 def get_entities_histories(res_set:Set[str], related_entities_history=False) -> Dict[str, Dict[str, ConjunctiveGraph]]:
+    """
+    Given a set of entities URIs it returns the history of those entities. 
+    You can also specify via the related_entities_history parameter
+    if you are also interested in the history of related entities.
+    It returns a dictionary according to the following model: ::
+
+        {
+            "entity_1_URI": {
+                "time_snapshot_1": graph_at_time_1,
+                "time_snapshot_2": graph_at_time_2,
+                "time_snapshot_n": graph_at_time_n
+            },
+            "entity_2_URI": {
+                "time_snapshot_1": graph_at_time_1,
+                "time_snapshot_2": graph_at_time_2,
+                "time_snapshot_n": graph_at_time_n
+            },
+            "entity_n_URI": {
+                "time_snapshot_1": graph_at_time_1,
+                "time_snapshot_2": graph_at_time_2,
+                "time_snapshot_n": graph_at_time_n
+            }
+        }
+
+    :param res_set: A set of the entities URI you want to retrieve the history about.
+    :type res_set: set.
+    :param related_entities_history: True if you also want to return information on related entities, that is, the ones that have the URIs in the res_set parameter as object, False otherwise. The default is False. 
+    :type related_entities_history: bool.
+    :returns:  Dict[str, Dict[str, ConjunctiveGraph]] -- A dictionary containing the graphs related to each considered entities in each of the existing snapshots of these entities.
+    """
     entities_histories = dict()
     for res in res_set:
-        agnostic_entity = Agnostic_entity(res, related_entities_history)
-        entities_histories.update(agnostic_entity.get_history())
+        AgnosticEntity = AgnosticEntity(res, related_entities_history)
+        entities_histories.update(AgnosticEntity.get_history())
     return entities_histories
 
 

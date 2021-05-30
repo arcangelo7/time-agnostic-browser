@@ -23,22 +23,48 @@ from rdflib.plugins.sparql.processor import prepareQuery
 from rdflib.plugins.sparql.sparql import Query
 from rdflib.plugins.sparql.parserutils import CompValue
 
-from time_agnostic_browser.support import File_manager
+from time_agnostic_browser.support import FileManager
 from time_agnostic_browser.prov_entity import ProvEntity
 
 
 CONFIG_PATH = "./config.json"
 
 class Sparql:
+    """
+    The Sparql class handles SPARQL queries.
+    It is instantiated by passing as a parameter 
+    the path to a configuration file, whose default location is "./config.json".
+    The configuration file must be in JSON format and contain information on the sources to be queried. 
+    There are two types of sources, dataset sources and provenance sources, and they need to be specified separately. 
+    Each must contain the URLs of the triplestore on which to search for information and/or the paths of the files that 
+    contain the information. The files must be in JSON format. Here is an example of the configuration file content: ::
+
+        {
+            "dataset": {
+                "triplestore_urls": ["http://localhost:9999/blazegraph/sparql"],
+                "file_paths": []
+            },
+            "provenance": {
+                "triplestore_urls": [],
+                "file_paths": ["./test/scientometrics_prov.json"]
+            }
+        }            
+
+    :param config_path: The path to the configuration file.
+    :type config_path: str.
+    """
     def __init__(self, config_path:str=CONFIG_PATH):
-        """
-        The Sparql class is instantiated by passing as a parameter 
-        the path of a configuration file, whose default location is "./config.json"
-        """
         self.config_path = config_path
-        self.config:list = File_manager(self.config_path).import_json()
+        self.config:list = FileManager(self.config_path).import_json()
     
     def run_select_query(self, query:str) -> Set[Tuple]:
+        """
+        Given a SELECT query, it returns the results in a set of tuples. 
+
+        :param query: A SELECT query.
+        :type query: str.
+        :returns:  Set[Tuple] -- A set of tuples, in which the positional value of the tuples corresponds to the positional value of the variables indicated in the query.
+        """
         output = set()
         if ProvEntity.PROV in query:
             storer:dict = self.config["provenance"]
@@ -79,6 +105,13 @@ class Sparql:
         return output
         
     def run_construct_query(self, query:str) -> ConjunctiveGraph:
+        """
+        Given a CONSTRUCT query, it returns the results in a ConjunctiveGraph. 
+
+        :param query: A CONSTRUCT query.
+        :type query: str.
+        :returns:  ConjunctiveGraph -- A ConjunctiveGraph containing the results of the query. 
+        """
         cg = ConjunctiveGraph()
         if ProvEntity.PROV in query:
             storer:dict = self.config["provenance"]

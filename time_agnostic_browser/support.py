@@ -21,11 +21,22 @@ from zipfile import ZipFile
 from rdflib.graph import ConjunctiveGraph
 
 
-class File_manager:
+class FileManager:
+    """
+    Convenient class for file management.
+
+    :param path: The path to a file.
+    :type path: str.
+    """
     def __init__(self, path:str):
         self.path = path
         
     def import_json(self) -> dict:
+        """
+        Import a JSON file as a dictionary.
+
+        :returns: dict -- A dictionary representing the imported JSON file.
+        """
         with open(self.path, encoding="utf8") as json_file:
             return json.load(json_file)
 
@@ -36,17 +47,27 @@ class File_manager:
                 ziph.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), os.path.join(self.path, '..')))
     
     def zip_data(self) -> None:
+        """
+        Zip a file as "output.zip" to the script execution path.
+
+        :returns: None -- The output can be found under the name "output.zip" in the execution path of the Python script.
+        """
         zipf = zipfile.ZipFile('output.zip', 'w', zipfile.ZIP_DEFLATED)
         self._zipdir(self.path, zipf)
         zipf.close()
 
     def minify_json(self) -> None:
+        """
+        Minify a JSON file.
+
+        :returns: None -- The output can be found under the same name of the input + "_min.json" in the same folder of the input file.
+        """
         print(f"[Support: INFO] Minifing file {self.path}")
         file_data = open(self.path, "r", encoding="utf-8").read()
         json_data = json.loads(file_data) 
         json_string = json.dumps(json_data, separators=(',', ":")) 
         path = str(self.path).replace(".json", "")
-        new_path = "{0}_minify.json".format(path)
+        new_path = "{0}_min.json".format(path)
         open(new_path, "w+", encoding="utf-8").write(json_string) 
 
 def _to_nt_sorted_list(cg:ConjunctiveGraph) -> list:
