@@ -14,13 +14,13 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 
-from pprint import pprint
 from typing import List, Tuple, Dict, Set
 from datetime import datetime
 from rdflib.graph import ConjunctiveGraph
 from rdflib.term import URIRef
 import copy
 from rdflib.plugins.sparql.processor import processUpdate
+from dateutil import parser
 
 from time_agnostic_browser.sparql import Sparql
 from time_agnostic_browser.prov_entity import ProvEntity
@@ -75,10 +75,10 @@ class AgnosticEntity:
         entity_history = self._get_old_graphs(entity_history)
         return entity_history
     
-    def get_state_at_time(self, time:str) -> Dict:
+    def get_state_at_time(self, time:str, get_hooks:bool=False) -> Dict:
         """
         Given a time, the function returns the resource's state at that time 
-        and the hooks to the previous and subsequent states. 
+        and, optionally, the hooks to the previous and subsequent states. 
         Specifically, a dictionary is returned according to the following pattern: ::
 
             {
@@ -95,16 +95,20 @@ class AgnosticEntity:
 
         :param time: The snapshot time for the resource to be returned.
         :type time: str.
-        :returns:  dict -- A dictionary containing the resource at time t and hooks to the previous and subsequent states of the resource.
+        :param get_hooks: If True, hooks are returned to the previous and subsequent states. The default value is False.
+        :type get_hooks: bool.
+        :returns:  dict -- A dictionary containing the resource at time t and, optionally, hooks to the previous and subsequent states of the resource.
         """
-        entity_at_time = {time: None, "before": dict(), "after": dict()}
         entity_history = self.get_history()
-        for snapshot in entity_history[self.res]:
-            if self._convert_to_datetime(snapshot) < self._convert_to_datetime(time):
-                entity_at_time["before"][snapshot] = entity_history[self.res][snapshot]
-            elif self._convert_to_datetime(snapshot) > self._convert_to_datetime(time):
-                entity_at_time["after"][snapshot] = entity_history[self.res][snapshot]
-        entity_at_time[time] = entity_history[self.res][time]
+        datetime_time = self._convert_to_datetime(time)
+        entity_at_time = dict()
+        if get_hooks:
+            for snapshot in entity_history[self.res]:
+                if snapshot < datetime_time:
+                    entity_at_time["before"][snapshot] = entity_history[self.res][snapshot]
+                elif snapshot > datetime_time:
+                    entity_at_time["after"][snapshot] = entity_history[self.res][snapshot]
+        entity_at_time[datetime_time] = entity_history[self.res][datetime_time]
         return entity_at_time
     
     def _get_entity_current_state(self) -> Dict[str, Dict[str, ConjunctiveGraph]]:
@@ -160,12 +164,20 @@ class AgnosticEntity:
                     subject=snapshot_uri, 
                     predicate=ProvEntity.iri_has_update_query,
                     object = None)
-                snapshot_update_query = snapshot_update_query.replace("INSERT", "%temp%").replace("DELETE", "INSERT").replace("%temp%", "DELETE")
-                processUpdate(previous_graph, snapshot_update_query)
-                previous_graph.remove((snapshot_uri, None, None))
-                entity_current_state[self.res][date_graph[0]] = previous_graph
+                # The following condition is temporary, there is probably a bug related to creating update queries in oc-ocdm. 
+                if snapshot_update_query is None:
+                    entity_current_state[self.res][date_graph[0]] = previous_graph
+                else:
+                    snapshot_update_query = snapshot_update_query.replace("INSERT", "%temp%").replace("DELETE", "INSERT").replace("%temp%", "DELETE")
+                    try:
+                        processUpdate(previous_graph, snapshot_update_query)
+                    # TEMP: When the update query is too long, RecursionError is raised by the processUpdate function
+                    except RecursionError:
+                        pass
+                    previous_graph.remove((snapshot_uri, None, None))
+                    entity_current_state[self.res][date_graph[0]] = previous_graph
         for time in list(entity_current_state[self.res]):
-            entity_current_state[self.res][str(time)] = entity_current_state[self.res].pop(time)
+            entity_current_state[self.res][self._convert_to_datetime(str(time))] = entity_current_state[self.res].pop(time)
         return entity_current_state
     
     def _query_dataset(self) -> ConjunctiveGraph:
@@ -183,7 +195,7 @@ class AgnosticEntity:
         # where the fourth element is the context.    
         if self.related_entities_history:       
             query_dataset = f"""
-                SELECT ?s ?p ?o ?c
+                SELECT DISTINCT ?s ?p ?o ?c
                 WHERE {{
                     GRAPH ?c {{?s ?p ?o}}
                     {{VALUES ?s {{<{self.res}>}}}}
@@ -193,7 +205,7 @@ class AgnosticEntity:
             """
         else:
             query_dataset = f"""
-                SELECT ?s ?p ?o ?c
+                SELECT DISTINCT ?s ?p ?o ?c
                 WHERE {{
                     GRAPH ?c {{?s ?p ?o}}
                     VALUES ?s {{<{self.res}>}} 
@@ -219,7 +231,13 @@ class AgnosticEntity:
     
     @classmethod
     def _convert_to_datetime(cls, time_string:str) -> datetime:
-        return datetime.strptime(time_string, "%Y-%m-%dT%H:%M:%S%z")
+        # date_patterns = ["%Y-%m-%dT%H:%M:%S.%f%z", "%Y-%m-%dT%H:%M:%S%z"]
+        # for pattern in date_patterns:
+        #     try:
+        #         return datetime.strptime(time_string, pattern)
+        #     except:
+        #         pass
+        return parser.parse(time_string)
 
 def get_entities_histories(res_set:Set[str], related_entities_history=False) -> Dict[str, Dict[str, ConjunctiveGraph]]:
     """
@@ -254,8 +272,8 @@ def get_entities_histories(res_set:Set[str], related_entities_history=False) -> 
     """
     entities_histories = dict()
     for res in res_set:
-        AgnosticEntity = AgnosticEntity(res, related_entities_history)
-        entities_histories.update(AgnosticEntity.get_history())
+        agnosticEntity = AgnosticEntity(res, related_entities_history)
+        entities_histories.update(agnosticEntity.get_history())
     return entities_histories
 
 
