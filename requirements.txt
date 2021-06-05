@@ -2,3 +2,4 @@ SPARQLWrapper
 rdflib
 rdflib-jsonld
 zipfile
+validators

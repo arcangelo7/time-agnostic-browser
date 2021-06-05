@@ -39,6 +39,14 @@ class FileManager:
         """
         with open(self.path, encoding="utf8") as json_file:
             return json.load(json_file)
+    
+    def dump_json(self, json_data:dict, beautiful:bool=False) -> None:
+        with open(self.path, 'w') as outfile:
+            print(f"[FileManager: INFO] Writing json to path {self.path}")
+            if beautiful:
+                json.dump(json_data, outfile, sort_keys=True, indent=4)
+            else:
+                json.dump(json_data, outfile)
 
     def _zipdir(self, ziph:ZipFile) -> None:
         for root, dirs, files in os.walk(self.path):
@@ -62,7 +70,7 @@ class FileManager:
 
         :returns: None -- The output can be found under the same name of the input + "_min.json" in the same folder of the input file.
         """
-        print(f"[Support: INFO] Minifing file {self.path}")
+        print(f"[FileManager: INFO] Minifing file {self.path}")
         file_data = open(self.path, "r", encoding="utf-8").read()
         json_data = json.loads(file_data) 
         json_string = json.dumps(json_data, separators=(',', ":")) 

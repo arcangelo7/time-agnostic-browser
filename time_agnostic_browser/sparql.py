@@ -14,8 +14,10 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 
+from pprint import pprint
 from typing import Set, Tuple
 
+from collections import OrderedDict
 from SPARQLWrapper import SPARQLWrapper, POST, RDFXML, JSON
 from rdflib import ConjunctiveGraph
 from rdflib.term import URIRef, Literal
@@ -100,8 +102,12 @@ class Sparql:
             sparql.setQuery(query)
             sparql.setReturnFormat(JSON)
             results = sparql.queryAndConvert()
+            vars_list = prepareQuery(query).algebra["PV"]
             for result_dict in results["results"]["bindings"]:
-                output.add(tuple(d["value"] for d in result_dict.values()))
+                results_list = list()
+                for var in vars_list:
+                    results_list.append(result_dict[str(var)]["value"])
+                output.add(tuple(results_list))
         return output
         
     def run_construct_query(self, query:str) -> ConjunctiveGraph:
