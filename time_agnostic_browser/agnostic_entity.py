@@ -15,7 +15,7 @@
 # SOFTWARE.
 
 from pprint import pprint
-from typing import List, Optional, Tuple, Dict, Set
+from typing import List, Optional, Tuple, Dict, Set, Union
 from datetime import datetime
 import rdflib
 from rdflib.graph import ConjunctiveGraph
@@ -85,34 +85,37 @@ class AgnosticEntity:
         self, 
         time: str, 
         get_hooks: bool = False, 
-        compute_hooks_graphs: bool = False
-        ) -> Tuple[ConjunctiveGraph, Optional[Dict[str, ConjunctiveGraph]]]:
+        ) -> Union[ConjunctiveGraph, Tuple[ConjunctiveGraph, Dict[str, str]]]:
         """
         Given a time, the function returns the resource's state at that time 
-        and, optionally, the hooks to the previous and subsequent states. 
-        Specifically, a dictionary is returned according to the following pattern: ::
-
-            {
-                "t": Graph at time t
-                "before": {
-                    "t-1": Graph at time t-1,
-                    "t-n": Graph at time t-n
-                }, 
-                "after": {
-                    "t+1": Graph at time t+1,
-                    "t+n": Graph at time t+n
+        and, optionally, the hooks to the previous and subsequent states.
+        The specified time can be any time, not necessarily the exact time of a snapshot. 
+        In addition, it can be specified in any existing standard. 
+        If get_hooks is False, the resource’s conjunctive graph at that time is returned. 
+        If True, a tuple is returned, in which the first element is the conjunctive graph, 
+        while the second is a dictionary in the form snapshot_uri: snapshot_time, 
+        where snapshot_uri is the URI of all snapshots other than the returned one.
+        This way, if you are interested in another snapshot, you can launch the method again by changing the time.
+        Here is an example of value returned in case get_hooks is True: ::
+        
+            (
+                <Graph identifier=N2fe380ea28e147249344a79f49647ddf (<class 'rdflib.graph.ConjunctiveGraph'>)>,
+                {
+                    'https://github.com/arcangelo7/time_agnostic/ar/1/prov/se/2': '2021-06-05T18:06:34.000Z',
+                    'https://github.com/arcangelo7/time_agnostic/ar/1/prov/se/3': '2021-06-05T18:06:41.000Z',
+                    'https://github.com/arcangelo7/time_agnostic/ar/1/prov/se/5': '2021-06-05T18:07:00.000Z'
                 }
-            }
+            )
 
-        :param time: The snapshot time for the resource to be returned.
+        :param time: Any time value, not necessarily the exact value of a snapshot. The status of the resource will be returned to the most recent past snapshot compared to the specified time. The time can be specified using any existing standard.
         :type time: str.
-        :param get_hooks: If True, hooks are returned to the previous and subsequent states. The default value is False.
+        :param get_hooks: If True, hooks are returned to the previous and subsequent snapshots. The default value is False.
         :type get_hooks: bool.
-        :returns:  dict -- A dictionary containing the resource at time t and, optionally, hooks to the previous and subsequent states of the resource.
+        :returns: dict -- The conjunctive graph at the specified time and, optionally, hooks to previous and subsequent snapshots.
         """
         datetime_time = self._convert_to_datetime(time)
         query_snapshots = f"""
-            SELECT ?time ?updateQuery
+            SELECT ?snapshot ?time ?updateQuery
             WHERE {{
                 ?snapshot <{ProvEntity.iri_specialization_of}> <{self.res}>;
                     <{ProvEntity.iri_generated_at_time}> ?time;
@@ -120,30 +123,23 @@ class AgnosticEntity:
             }}
         """
         results = list(Sparql().run_select_query(query_snapshots))
-        results.sort(key=lambda x:x[0], reverse=True)
+        results.sort(key=lambda x:x[1], reverse=True)
         results_after_time = list()
         for result in results:
-            if self._convert_to_datetime(result[0]) > datetime_time:
+            if self._convert_to_datetime(result[1]) > datetime_time:
                 results_after_time.append(result)
         sum_update_queries = ""
         for result in results_after_time:
-            sum_update_queries += result[1] + ";"
+            sum_update_queries += result[2] + ";"
         entity_cg = self._query_dataset()
         self._manage_update_queries(entity_cg, sum_update_queries)
-        entity_history = self.get_history()
-        if compute_hooks_graphs:
-            computed_graphs = {
-                "before": dict(), 
-                "after": dict()
-            }
-            entity_history = self.get_history()
-            for snapshot in entity_history[self.res]:
-                if snapshot < datetime_time:
-                    computed_graphs["before"][snapshot] = entity_history[self.res][snapshot]
-                elif snapshot > datetime_time:
-                    computed_graphs["after"][snapshot] = entity_history[self.res][snapshot]
-            computed_graphs[datetime_time] = entity_history[self.res][datetime_time]
-            return entity_cg, computed_graphs
+        if get_hooks:
+            snapshot_to_return = min(results, key=lambda x:abs(self._convert_to_datetime(x[1])-datetime_time))
+            results.remove(snapshot_to_return)
+            other_snapshots = dict()
+            for result_tuple in results:
+                other_snapshots[result_tuple[0]] = result_tuple[1]
+            return entity_cg, other_snapshots
         return entity_cg
 
     def _get_entity_current_state(self) -> Dict[str, Dict[str, ConjunctiveGraph]]:
