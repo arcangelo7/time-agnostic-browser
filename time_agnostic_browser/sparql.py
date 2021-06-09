@@ -17,13 +17,14 @@
 from pprint import pprint
 from typing import Set, Tuple
 
-from collections import OrderedDict
 from SPARQLWrapper import SPARQLWrapper, POST, RDFXML, JSON
-from rdflib import ConjunctiveGraph
+from rdflib import ConjunctiveGraph, XSD
+from rdflib.term import _toPythonMapping
 from rdflib.term import URIRef, Literal
 from rdflib.plugins.sparql.processor import prepareQuery
 from rdflib.plugins.sparql.sparql import Query
 from rdflib.plugins.sparql.parserutils import CompValue
+
 
 from time_agnostic_browser.support import FileManager
 from time_agnostic_browser.prov_entity import ProvEntity
@@ -58,6 +59,14 @@ class Sparql:
     def __init__(self, config_path:str=CONFIG_PATH):
         self.config_path = config_path
         self.config:list = FileManager(self.config_path).import_json()
+        self._hack_dates()
+
+    @classmethod
+    def _hack_dates(cls) -> None:
+        if XSD.gYear in _toPythonMapping:
+            _toPythonMapping.pop(XSD.gYear)
+        if XSD.gYearMonth in _toPythonMapping:
+            _toPythonMapping.pop(XSD.gYearMonth)
     
     def run_select_query(self, query:str) -> Set[Tuple]:
         """
@@ -106,7 +115,10 @@ class Sparql:
             for result_dict in results["results"]["bindings"]:
                 results_list = list()
                 for var in vars_list:
-                    results_list.append(result_dict[str(var)]["value"])
+                    if str(var) in result_dict:
+                        results_list.append(result_dict[str(var)]["value"])
+                    else:
+                        results_list.append(None)
                 output.add(tuple(results_list))
         return output
         

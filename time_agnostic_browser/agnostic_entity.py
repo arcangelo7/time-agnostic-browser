@@ -85,25 +85,35 @@ class AgnosticEntity:
         self, 
         time: str, 
         get_hooks: bool = False, 
-        ) -> Union[ConjunctiveGraph, Tuple[ConjunctiveGraph, Dict[str, str]]]:
+        ) -> Tuple[ConjunctiveGraph, Dict[str, str], Dict[str, str]]:
         """
-        Given a time, the function returns the resource's state at that time 
+        Given a time, the function returns the resource's state at that time, the returned snapshot metadata
         and, optionally, the hooks to the previous and subsequent states.
+        Snapshot metadata includes generation time, the responsible agent and the primary source.
         The specified time can be any time, not necessarily the exact time of a snapshot. 
         In addition, it can be specified in any existing standard. 
-        If get_hooks is False, the resource’s conjunctive graph at that time is returned. 
-        If True, a tuple is returned, in which the first element is the conjunctive graph, 
-        while the second is a dictionary in the form snapshot_uri: snapshot_time, 
-        where snapshot_uri is the URI of all snapshots other than the returned one.
-        This way, if you are interested in another snapshot, you can launch the method again by changing the time.
-        Here is an example of value returned in case get_hooks is True: ::
-        
+        Here is an example of possible output: ::
+
             (
-                <Graph identifier=N2fe380ea28e147249344a79f49647ddf (<class 'rdflib.graph.ConjunctiveGraph'>)>,
+                <Graph identifier=N75add58bd55b4d9f88082787e3e2c888 (<class 'rdflib.graph.ConjunctiveGraph'>)>,
                 {
-                    'https://github.com/arcangelo7/time_agnostic/ar/1/prov/se/2': '2021-06-05T18:06:34.000Z',
-                    'https://github.com/arcangelo7/time_agnostic/ar/1/prov/se/3': '2021-06-05T18:06:41.000Z',
-                    'https://github.com/arcangelo7/time_agnostic/ar/1/prov/se/5': '2021-06-05T18:07:00.000Z'
+                    'https://github.com/arcangelo7/time_agnostic/id/1/prov/se/2': {
+                        'http://www.w3.org/ns/prov#generatedAtTime': '2021-06-04T09:36:53.000Z',
+                        'http://www.w3.org/ns/prov#hadPrimarySource': None,
+                        'http://www.w3.org/ns/prov#wasAttributedTo': 'https://orcid.org/0000-0002-8420-0696'
+                    }
+                },
+                {
+                    'https://github.com/arcangelo7/time_agnostic/id/1/prov/se/1': {
+                        'http://www.w3.org/ns/prov#generatedAtTime': '2021-05-29T16:20:22.000Z',
+                        'http://www.w3.org/ns/prov#hadPrimarySource': None,
+                        'http://www.w3.org/ns/prov#wasAttributedTo': 'https://orcid.org/0000-0002-8420-0696'
+                    },
+                    'https://github.com/arcangelo7/time_agnostic/id/1/prov/se/3': {
+                        'http://www.w3.org/ns/prov#generatedAtTime': '2021-06-04T11:15:32.000Z',
+                        'http://www.w3.org/ns/prov#hadPrimarySource': None,
+                        'http://www.w3.org/ns/prov#wasAttributedTo': 'https://orcid.org/0000-0002-8420-0696'
+                    }
                 }
             )
 
@@ -111,36 +121,52 @@ class AgnosticEntity:
         :type time: str.
         :param get_hooks: If True, hooks are returned to the previous and subsequent snapshots. The default value is False.
         :type get_hooks: bool.
-        :returns: dict -- The conjunctive graph at the specified time and, optionally, hooks to previous and subsequent snapshots.
+        :returns: tuple --   The method always returns a tuple of three elements: the first is the resource conjunctive graph at that time, the second is the snapshot metadata of which the state has been returned. If the get_hooks parameter is True, the third element of the tuple is the metadata on the other snapshots, otherwise an empty dictionary. The third dictionary is empty also if only one snapshot exists.
         """
         datetime_time = self._convert_to_datetime(time)
         query_snapshots = f"""
-            SELECT ?snapshot ?time ?updateQuery
+            SELECT ?snapshot ?time ?responsibleAgent ?updateQuery ?primarySource
             WHERE {{
                 ?snapshot <{ProvEntity.iri_specialization_of}> <{self.res}>;
                     <{ProvEntity.iri_generated_at_time}> ?time;
-                    <{ProvEntity.iri_has_update_query}> ?updateQuery.
+                    <{ProvEntity.iri_was_attributed_to}> ?responsibleAgent.
+                OPTIONAL {{
+                    ?snapshot <{ProvEntity.iri_has_update_query}> ?updateQuery.
+                }}
+                OPTIONAL {{
+                    ?snapshot <{ProvEntity.iri_had_primary_source}> ?primarySource.
+                }}
             }}
         """
         results = list(Sparql().run_select_query(query_snapshots))
-        results.sort(key=lambda x:x[1], reverse=True)
+        results.sort(key=lambda x:self._convert_to_datetime(x[1]), reverse=True)
         results_after_time = list()
         for result in results:
             if self._convert_to_datetime(result[1]) > datetime_time:
                 results_after_time.append(result)
         sum_update_queries = ""
         for result in results_after_time:
-            sum_update_queries += result[2] + ";"
+            sum_update_queries += result[3] + ";"
         entity_cg = self._query_dataset()
         self._manage_update_queries(entity_cg, sum_update_queries)
+        entity_snapshot = dict()
+        snapshot_to_return = min(results, key=lambda x:abs(self._convert_to_datetime(x[1])-datetime_time))
+        entity_snapshot[snapshot_to_return[0]] = {
+            str(ProvEntity.iri_generated_at_time): snapshot_to_return[1],
+            str(ProvEntity.iri_was_attributed_to): snapshot_to_return[2],
+            str(ProvEntity.iri_had_primary_source): snapshot_to_return[4]
+        }
         if get_hooks:
-            snapshot_to_return = min(results, key=lambda x:abs(self._convert_to_datetime(x[1])-datetime_time))
             results.remove(snapshot_to_return)
             other_snapshots = dict()
             for result_tuple in results:
-                other_snapshots[result_tuple[0]] = result_tuple[1]
-            return entity_cg, other_snapshots
-        return entity_cg
+                other_snapshots[result_tuple[0]] = {
+                    str(ProvEntity.iri_generated_at_time): result_tuple[1],
+                    str(ProvEntity.iri_was_attributed_to): result_tuple[2],
+                    str(ProvEntity.iri_had_primary_source): result_tuple[4]
+            }
+            return entity_cg, entity_snapshot, other_snapshots
+        return entity_cg, entity_snapshot, dict()
 
     def _get_entity_current_state(self) -> Dict[str, Dict[str, ConjunctiveGraph]]:
         """
