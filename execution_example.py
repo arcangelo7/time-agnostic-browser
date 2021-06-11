@@ -9,17 +9,27 @@ from pprint import pprint
 from oc_ocdm.graph import GraphSet
 from oc_ocdm.prov import ProvSet
 from oc_ocdm import Storer, Reader
-import sys
-import rdflib
+import sys, rdflib, pytz
+from datetime import datetime
 from oc_ocdm.graph.entities.identifier import Identifier
+from oc_ocdm.graph.entities.bibliographic import AgentRole
 
 from time_agnostic_browser.sparql import Sparql
 from time_agnostic_browser.prov_entity import ProvEntity
 from time_agnostic_browser.agnostic_entity import AgnosticEntity
+from time_agnostic_browser.agnostic_query import AgnosticQuery
 
 
-agnostic_entity = AgnosticEntity(res="https://github.com/arcangelo7/time_agnostic/id/1")
-state_at_time = agnostic_entity.get_state_at_time(time="2021-06-04T09:36:53.000Z", get_hooks=True)
-pprint(state_at_time)
+query = f"""
+SELECT DISTINCT ?o
+WHERE {{
+    <https://github.com/arcangelo7/time_agnostic/ar/1> <{AgentRole.iri_is_held_by}> ?o.
+}}
+"""
+# agnostic_query = AgnosticQuery(query=query)
+agnostic_query = AgnosticQuery(past_graphs_location="http://localhost:19999/blazegraph/sparql", query=query)
+# agnostic_query = AgnosticQuery(past_graphs_location="past_graphs.json", query=query)
 
+results = agnostic_query.run_agnostic_query()
+pprint(results)
                             

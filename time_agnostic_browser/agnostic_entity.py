@@ -146,7 +146,8 @@ class AgnosticEntity:
                 results_after_time.append(result)
         sum_update_queries = ""
         for result in results_after_time:
-            sum_update_queries += result[3] + ";"
+            if result[3] is not None:
+                sum_update_queries += result[3] + ";"
         entity_cg = self._query_dataset()
         self._manage_update_queries(entity_cg, sum_update_queries)
         entity_snapshot = dict()
