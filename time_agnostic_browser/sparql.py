@@ -172,7 +172,7 @@ class Sparql:
             # since the CONSTRUCT allows only to return triples in SPARQL 1.1.
             # Here is an exemple of SELECT hack
             #
-            # SELECT ?s ?p ?o ?c
+            # SELECT DISTINCT ?s ?p ?o ?c
             # WHERE {
             #     GRAPH ?c {?s ?p ?o}
             #     BIND (<{self.res}> AS ?s)

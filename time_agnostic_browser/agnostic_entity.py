@@ -250,24 +250,28 @@ class AgnosticEntity:
         matches = re.split(triples_end_pattern, update_query)
         # 90 is the maximum number of triples after which recursion error occurs
         if len(matches) > 90:
-            split_by_operations = re.split(operations_pattern, update_query, re.IGNORECASE)
+            split_by_operations = re.split(operations_pattern, update_query, flags=re.IGNORECASE)
             # The operations are the odd elements of the list
             operations = split_by_operations[1::2]
+            start = 0
             for operation in operations:
-                triples = split_by_operations[split_by_operations.index(operation) + 1]
+                operation_index = split_by_operations.index(operation, start)
+                start = operation_index + 1
+                triples = split_by_operations[operation_index + 1]
                 operation_and_query = operation + triples
-                matches = re.split(triples_end_pattern, operation_and_query)
-                if len(matches) > 90:
-                    matches_left = len(matches)
+                matches_with_operation = re.split(triples_end_pattern, operation_and_query)
+                if len(matches_with_operation) > 90:
                     # Remove operation and trailing "} }"
-                    matches = [match.replace(operation, "") for match in matches][:-1]
-                    while matches_left > 0:
-                        cut_update_query = operation + "> .".join(matches[0:90]) + "> .} }"
-                        processUpdate(graph, cut_update_query)
-                        matches_left -= 90
-                        matches = matches[90:]
+                    matches_no_operation = [match.replace(operation, "") for match in matches_with_operation][:-1]
+                    while len(matches_no_operation) > 0:
+                        cut_update_query = operation + "> .".join(matches_no_operation[:90]) + "> .} }"
+                        try:
+                            processUpdate(graph, cut_update_query)
+                        except Exception:
+                            print(update_query)
+                        matches_no_operation = matches_no_operation[90:]
                 else:
-                    processUpdate(graph, operation_and_query)                
+                    processUpdate(graph, operation_and_query)      
         else:
             processUpdate(graph, update_query)
 

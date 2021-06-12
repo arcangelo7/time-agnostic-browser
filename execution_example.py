@@ -21,15 +21,16 @@ from time_agnostic_browser.agnostic_query import AgnosticQuery
 
 
 query = f"""
-SELECT DISTINCT ?o
+SELECT DISTINCT ?s
 WHERE {{
     <https://github.com/arcangelo7/time_agnostic/ar/1> <{AgentRole.iri_is_held_by}> ?o.
 }}
 """
 # agnostic_query = AgnosticQuery(query=query)
-agnostic_query = AgnosticQuery(past_graphs_location="http://localhost:19999/blazegraph/sparql", query=query)
+# agnostic_query = AgnosticQuery(past_graphs_location="http://localhost:19999/blazegraph/sparql", query=query)
+agnostic_query = AgnosticQuery(past_graphs_destination="http://localhost:19999/blazegraph/sparql", query=query)
 # agnostic_query = AgnosticQuery(past_graphs_location="past_graphs.json", query=query)
 
-results = agnostic_query.run_agnostic_query()
-pprint(results)
+# results = agnostic_query.run_agnostic_query()
+# pprint(results)
                             

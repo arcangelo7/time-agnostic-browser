@@ -18,10 +18,9 @@ from typing import Set, Tuple, Dict, List
 from SPARQLWrapper.Wrapper import SPARQLWrapper, POST, JSON
 
 import validators, json, re
-from rdflib.plugins.sparql.processor import prepareQuery, evalQuery
+from rdflib.plugins.sparql.processor import prepareQuery
 from rdflib.plugins.sparql.sparql import Query
 from rdflib.plugins.sparql.parserutils import CompValue
-from rdflib.plugins.stores import sparqlstore
 from rdflib import ConjunctiveGraph, URIRef, Literal
 from tqdm import tqdm
 from datetime import datetime
@@ -31,7 +30,6 @@ from time_agnostic_browser.support import FileManager
 from time_agnostic_browser.sparql import Sparql
 from time_agnostic_browser.prov_entity import ProvEntity
 from time_agnostic_browser.agnostic_entity import AgnosticEntity
-from pprint import pprint
 
 
 class AgnosticQuery:
@@ -46,8 +44,9 @@ class AgnosticQuery:
     :type query: str
 
     .. CAUTION::
-        Depending on the amount of snapshots, reconstructing the past state of knowledge may take a long time. For example, reconstructing 26 different states in each of which 23,000 entities have changed takes about 12 hours. The experiment was performed with an Intel Core i5 8500, an Nvme Pcie 3.0 SSD and DDR4 3000 Mhz CL15 RAM. The amount of storage or RAM is unimportant, as only deltas are processed and the impact on both is minimal.
+        Depending on the amount of snapshots, reconstructing the past state of knowledge may take a long time. For example, reconstructing 26 different states in each of which 23,000 entities have changed takes about 12 hours. The experiment was performed with an Intel Core i5 8500, a 1 TB SSD Nvme Pcie 3.0, and 32 GB RAM DDR4 3000 Mhz CL15.
     """
+    @profile
     def __init__(self, past_graphs_location:str="", past_graphs_destination:str="past_graphs.json", query:str=""):
         self.past_graphs_location = past_graphs_location
         self.query = query
@@ -55,6 +54,7 @@ class AgnosticQuery:
             print("[AgnosticQuery: INFO] Recreating past graphs. That may take some considerable time.")
             past_graphs = self._rebuild_past_graphs()
             self._save_past_graphs(past_graphs, past_graphs_destination)
+            self.past_graphs_location = past_graphs_destination
         if query:
             prepare_query:Query = prepareQuery(self.query)
             algebra:CompValue = prepare_query.algebra
@@ -62,11 +62,13 @@ class AgnosticQuery:
             if algebra.name != "SelectQuery":
                 raise ValueError("Only SELECT queries are allowed")
     
+    @profile
     def _rebuild_past_graphs(self):
         deltas = self._rebuild_deltas()
         past_graphs = self._complete_past_graphs(deltas)
         return past_graphs
- 
+    
+    @profile
     def _rebuild_deltas(self) -> Dict[str, ConjunctiveGraph]:
         dict_of_snapshots:Dict[str, Set] = dict()
         query_times = f"""
@@ -107,6 +109,7 @@ class AgnosticQuery:
         pbar_snapshot.close()
         return past_graphs
     
+    @profile
     def _complete_past_graphs(self, deltas:Dict[str, ConjunctiveGraph]):
         ordered_data: List[Tuple[str, ConjunctiveGraph]] = sorted(
             deltas.items(),
@@ -140,6 +143,7 @@ class AgnosticQuery:
             complete_past_graphs[snapshot] = complete_past_graph
         return complete_past_graphs
 
+    @profile
     def _save_past_graphs(self, past_graphs:Dict[str, ConjunctiveGraph], destination:str) -> None:
         if validators.url(destination):
             for snapshot, cg in past_graphs.items():
@@ -169,7 +173,15 @@ class AgnosticQuery:
             cg_json = json.loads(cg_string)
             FileManager(path=destination).dump_json(cg_json)
     
+    @profile
     def run_agnostic_query(self) -> Dict[str, Set[Tuple]]:
+        """
+        It launches a time agnostic query, 
+        which returns the result not only with respect to the current state of knowledge, 
+        but also with respect to past ones.
+
+        :returns Dict[str, Set[Tuple]] -- A dictionary is returned in which the keys correspond to the recorded snapshots, while the values correspond to a set of tuples containing the query results at that snapshot, where the positional value of the elements in the tuples is equivalent to the order of the variables indicated in the query.
+        """
         agnostic_result = dict()
         present = Sparql().run_select_query(self.query)
         now = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
@@ -180,6 +192,7 @@ class AgnosticQuery:
             agnostic_result.update(self._query_agnostic_file())
         return agnostic_result
 
+    @profile
     def _query_agnostic_triplestore(self):
         agnostic_result = dict()
         query_other_dates = """
@@ -211,6 +224,7 @@ class AgnosticQuery:
             agnostic_result[g['date']['value']] = output
         return agnostic_result
 
+    @profile
     def _query_agnostic_file(self):
         agnostic_result = dict()
         past_graphs = ConjunctiveGraph()
