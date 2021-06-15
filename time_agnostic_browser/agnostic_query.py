@@ -46,7 +46,6 @@ class AgnosticQuery:
     .. CAUTION::
         Depending on the amount of snapshots, reconstructing the past state of knowledge may take a long time. For example, reconstructing 26 different states in each of which 23,000 entities have changed takes about 12 hours. The experiment was performed with an Intel Core i5 8500, a 1 TB SSD Nvme Pcie 3.0, and 32 GB RAM DDR4 3000 Mhz CL15.
     """
-    @profile
     def __init__(self, past_graphs_location:str="", past_graphs_destination:str="past_graphs.json", query:str=""):
         self.past_graphs_location = past_graphs_location
         self.query = query
@@ -62,13 +61,11 @@ class AgnosticQuery:
             if algebra.name != "SelectQuery":
                 raise ValueError("Only SELECT queries are allowed")
     
-    @profile
     def _rebuild_past_graphs(self):
         deltas = self._rebuild_deltas()
         past_graphs = self._complete_past_graphs(deltas)
         return past_graphs
     
-    @profile
     def _rebuild_deltas(self) -> Dict[str, ConjunctiveGraph]:
         dict_of_snapshots:Dict[str, Set] = dict()
         query_times = f"""
@@ -109,7 +106,6 @@ class AgnosticQuery:
         pbar_snapshot.close()
         return past_graphs
     
-    @profile
     def _complete_past_graphs(self, deltas:Dict[str, ConjunctiveGraph]):
         ordered_data: List[Tuple[str, ConjunctiveGraph]] = sorted(
             deltas.items(),
@@ -143,7 +139,6 @@ class AgnosticQuery:
             complete_past_graphs[snapshot] = complete_past_graph
         return complete_past_graphs
 
-    @profile
     def _save_past_graphs(self, past_graphs:Dict[str, ConjunctiveGraph], destination:str) -> None:
         if validators.url(destination):
             for snapshot, cg in past_graphs.items():
@@ -173,7 +168,6 @@ class AgnosticQuery:
             cg_json = json.loads(cg_string)
             FileManager(path=destination).dump_json(cg_json)
     
-    @profile
     def run_agnostic_query(self) -> Dict[str, Set[Tuple]]:
         """
         It launches a time agnostic query, 
@@ -192,7 +186,6 @@ class AgnosticQuery:
             agnostic_result.update(self._query_agnostic_file())
         return agnostic_result
 
-    @profile
     def _query_agnostic_triplestore(self):
         agnostic_result = dict()
         query_other_dates = """
@@ -224,7 +217,6 @@ class AgnosticQuery:
             agnostic_result[g['date']['value']] = output
         return agnostic_result
 
-    @profile
     def _query_agnostic_file(self):
         agnostic_result = dict()
         past_graphs = ConjunctiveGraph()

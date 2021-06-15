@@ -1,0 +1,30 @@
+{% extends 'base.jinja2' %}
+{% block content %}
+    <section class="section">
+        <div class="container">
+            <h1 class="mb-5" id="resName">{{res}}</h1>
+            {% for snapshot in history[res] %}
+                <div class="card bg-primary border-light shadow-soft my-5 p-5">
+                    <h3>{{snapshot}}</h3>
+                    <table class ="table table-responsive col-sm-11 mb-5">
+                        <thead>
+                            <tr>
+                                <th id="outgoingPredicate">Predicate</th>
+                                <th id="outgoingObject">Object</th>
+                            </tr> 
+                        </thead>  
+                        <tbody>
+                            {% for triple in history[res][snapshot] %}
+                                <tr>
+                                    {% set spo = triple.split("&#62; ") %}
+                                    <td headers="outgoingPredicate">{{spo[1]}}</td>
+                                    <td headers="outgoingObject">{{spo[2]}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>     
+                    </table>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

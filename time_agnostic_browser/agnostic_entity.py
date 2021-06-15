@@ -238,8 +238,7 @@ class AgnosticEntity:
             cg_no_pro = entity_current_state[self.res].pop(time)
             cg_no_pro.remove((None, ProvEntity.iri_generated_at_time, None))
             cg_no_pro.remove((None, ProvEntity.iri_has_update_query, None))
-            entity_current_state[self.res][self._convert_to_datetime(
-                str(time))] = cg_no_pro
+            entity_current_state[self.res][str(time)] = cg_no_pro
         return entity_current_state
 
     @classmethod

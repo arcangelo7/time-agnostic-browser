@@ -1,0 +1,80 @@
+{% extends 'base.jinja2' %}
+{% block content %}
+<main>
+    <!-- Hero -->
+    <section class="section section bg-soft pb-5 overflow-hidden z-2">
+        <div class="container z-2">
+            <div class="row justify-content-center text-center pt-6">
+                <div class="col-lg-8 col-xl-8">
+                    <h1 class="display-2 mb-3">Time Agnostic Browser</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <!-- Tab Nav -->
+                    <div class="nav-wrapper position-relative mb-4">
+                        <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-icons-text" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link mb-sm-3 mb-md-0 active" id="tabs-icons-text-1-tab" data-toggle="tab" href="#tabs-icons-text-1" role="tab" aria-controls="tabs-icons-text-1" aria-selected="true">
+                                    <i class="fas fa-search"></i>
+                                    Explore
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link mb-sm-3 mb-md-0" id="tabs-icons-text-2-tab" data-toggle="tab" href="#tabs-icons-text-2" role="tab" aria-controls="tabs-icons-text-2" aria-selected="false">
+                                    <svg class="mr-2" viewBox="0 0 943 1019" style="fill: currentColor; display: inline-block; vertical-align: -0.1em; height: 0.9em"><path fill-rule="evenodd" d="M845,668c-6-3-13-6-19-9l5-0c0,0-42-18-45-152 c-4-133,40-156,40-156l-0,0c33-17,61-43,79-78c48-91,14-203-77-252 C729-26,617,8,569,99c-20,37-25,78-19,117l-2-3c0,0,11,48-103,119 c-113,71-165,35-165,35l3,5c-3-2-6-4-10-6C183,317,70,352,22,443 c-48,91-14,203,77,252c68,36,147,26,204-19l-1,2c0,0,41-34,160,30 c94,50,108,100,110,118c-2,69,33,137,98,171c91,48,203,14,252-77 C970,829,935,717,845,668z M635,693c-15,5-58,11-148-37 c-98-53-113-97-115-110c1-16,1-32-2-48l1,1c0,0-8-43,104-112 c100-62,146-50,154-47c5,4,11,7,17,10c11,6,23,11,35,14 c14,13,39,50,42,149c3,99-26,137-42,150C664,671,648,681,635,693z   M622,81c-54,59-55,146-3,196c-26-25-25-77,1-126 c3-4,13-15,27-10c1,0,2,1,3,1c3,1,7,1,10,1 c22-1,38-19,37-41c-0-10-4-18-11-25c50-33,107-37,131-15l1,0 C765,12,677,21,622,81z   M78,431c-54,59-55,146-03,196c-26-25-25-77,1-126 c3-4,13-15,27-10c1,0,2,1,3,1c3,1,7,1,10,1 c22-1,38-19,37-41c-0-10-4-18-11-25c50-33,107-37,131-15l1,0 C221,363,133,371,78,431z   M654,728c-54,59-55,146-3,196c-26-25-25-77,1-126 c3-4,13-15,27-10c1,0,2,1,3,1c3,1,7,1,10,1 c22-1,38-19,37-41c-0-10-4-18-11-25c50-33,107-37,131-15l1,0 C797,659,709,668,654,728z"></path></svg>
+                                    Query
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- End of Tab Nav -->
+                    <!-- Tab Content -->
+                    <div class="card-body p-0">
+                        <div class="tab-content" id="tabcontent2">
+                            <div class="tab-pane fade show active" id="tabs-icons-text-1" role="tabpanel" aria-labelledby="tabs-icons-text-1-tab">
+                                <label for="searchByURI">Enter a URI to begin navigation</label>
+                                <input type="text" class="form-control" id="searchByURI" aria-describedby="emailHelp">
+                                <button id="exploreSubmit" class="btn btn-primary btn-pill text-secondary m-5">
+                                    <span class="mr-1"><span class="fas fa-search"></span></span>
+                                    Submit the query
+                                </button>
+                            </div>
+                            <div class="tab-pane fade" id="tabs-icons-text-2" role="tabpanel" aria-labelledby="tabs-icons-text-2-tab">
+                                <label for="sparqlEndpoint">Input a SPARQL query</label>
+                                <textarea class="form-control" id="sparqlEndpoint" rows="10"></textarea>
+                                <button id="sparqlQuerySubmit" class="btn btn-primary btn-pill text-secondary m-5">
+                                    <span class="mr-1"><span class="fas fa-search"></span></span>
+                                    Submit the query
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End of Tab Content -->
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container-fluid">
+            <div id="alert" class="container"></div>
+            <div class="row d-flex justify-content-center">
+                <div id="exploreResults">
+                
+                </div>
+                <table id="sparqlResults" class ="table shadow-soft rounded col-sm-10 col-md-6">
+                    <thead>
+                        <tr>
+                        </tr> 
+                    </thead>  
+                    <tbody></tbody>     
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
