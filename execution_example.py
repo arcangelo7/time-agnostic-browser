@@ -27,18 +27,16 @@ prefix datacite: <http://purl.org/spar/datacite/>
 prefix pro: <http://purl.org/spar/pro/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-SELECT DISTINCT ?o ?id ?value
+SELECT DISTINCT ?s
 WHERE {
-    <https://github.com/arcangelo7/time_agnostic/ar/15519> pro:isHeldBy ?o.
-    ?o datacite:hasIdentifier ?id.
-    ?id literal:hasLiteralValue ?value.
+    ?s pro:isHeldBy <https://github.com/arcangelo7/time_agnostic/ra/4>.
 }
 """
 # agnostic_query = AgnosticQuery(query=query)
 # agnostic_query = AgnosticQuery(past_graphs_location="http://localhost:19999/blazegraph/sparql", query=query)
 agnostic_query = AgnosticQuery(query=query)
-# results = agnostic_query.run_agnostic_query()
-# pprint(results)
+results = agnostic_query.run_agnostic_query()
+pprint(results)
 # agnostic_query = AgnosticQuery(past_graphs_location="past_graphs.json", query=query)
 
 # results = agnostic_query.run_agnostic_query()
