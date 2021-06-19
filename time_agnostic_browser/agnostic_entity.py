@@ -187,6 +187,8 @@ class AgnosticEntity:
             current_state.add(quad)
         for quad in self._query_provenance().quads():
             current_state.add(quad)
+        if len(current_state) == 0:
+            return entity_current_state
         triples_generated_at_time = current_state.triples(
             (None, ProvEntity.iri_generated_at_time, None))
         most_recent_time = None

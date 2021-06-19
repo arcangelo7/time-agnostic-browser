@@ -1,6 +1,7 @@
 from datetime import time
 from SPARQLWrapper import XML, SPARQLWrapper, JSON, POST
 from SPARQLWrapper.Wrapper import RDFXML
+from oc_ocdm.graph.graph_entity import GraphEntity
 from rdflib import URIRef, Literal, Graph, ConjunctiveGraph
 from rdflib.plugins.sparql import sparql
 from rdflib.plugins.sparql.processor import processUpdate
@@ -20,15 +21,24 @@ from time_agnostic_browser.agnostic_entity import AgnosticEntity
 from time_agnostic_browser.agnostic_query import AgnosticQuery
 
 
-query = f"""
-SELECT DISTINCT ?s
-WHERE {{
-    <https://github.com/arcangelo7/time_agnostic/ar/1> <{AgentRole.iri_is_held_by}> ?o.
-}}
+query = """
+prefix literal: <http://www.essepuntato.it/2010/06/literalreification/>
+prefix datacite: <http://purl.org/spar/datacite/>
+prefix pro: <http://purl.org/spar/pro/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT DISTINCT ?o ?id ?value
+WHERE {
+    <https://github.com/arcangelo7/time_agnostic/ar/15519> pro:isHeldBy ?o.
+    ?o datacite:hasIdentifier ?id.
+    ?id literal:hasLiteralValue ?value.
+}
 """
 # agnostic_query = AgnosticQuery(query=query)
 # agnostic_query = AgnosticQuery(past_graphs_location="http://localhost:19999/blazegraph/sparql", query=query)
-agnostic_query = AgnosticQuery(past_graphs_destination="http://localhost:19999/blazegraph/sparql", query=query)
+agnostic_query = AgnosticQuery(query=query)
+# results = agnostic_query.run_agnostic_query()
+# pprint(results)
 # agnostic_query = AgnosticQuery(past_graphs_location="past_graphs.json", query=query)
 
 # results = agnostic_query.run_agnostic_query()

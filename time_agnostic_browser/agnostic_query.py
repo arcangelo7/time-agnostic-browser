@@ -16,20 +16,24 @@
 
 from typing import Set, Tuple, Dict, List
 from SPARQLWrapper.Wrapper import SPARQLWrapper, POST, JSON
+from rdflib.plugins.sparql.parser import Var
 
 import validators, json, re
+from collections import deque
 from rdflib.plugins.sparql.processor import prepareQuery
 from rdflib.plugins.sparql.sparql import Query
 from rdflib.plugins.sparql.parserutils import CompValue
-from rdflib import ConjunctiveGraph, URIRef, Literal
+from rdflib import ConjunctiveGraph, URIRef, Literal, Variable
 from tqdm import tqdm
 from datetime import datetime
 from dateutil import parser
 
-from time_agnostic_browser.support import FileManager
+from time_agnostic_browser.support import FileManager, _to_nt_sorted_list, _to_dict_of_nt_sorted_lists
 from time_agnostic_browser.sparql import Sparql
 from time_agnostic_browser.prov_entity import ProvEntity
 from time_agnostic_browser.agnostic_entity import AgnosticEntity
+
+from pprint import pprint
 
 
 class AgnosticQuery:
@@ -46,128 +50,123 @@ class AgnosticQuery:
     .. CAUTION::
         Depending on the amount of snapshots, reconstructing the past state of knowledge may take a long time. For example, reconstructing 26 different states in each of which 23,000 entities have changed takes about 12 hours. The experiment was performed with an Intel Core i5 8500, a 1 TB SSD Nvme Pcie 3.0, and 32 GB RAM DDR4 3000 Mhz CL15.
     """
-    def __init__(self, past_graphs_location:str="", past_graphs_destination:str="past_graphs.json", query:str=""):
-        self.past_graphs_location = past_graphs_location
+    def __init__(self, query:str):
         self.query = query
-        if not past_graphs_location:
-            print("[AgnosticQuery: INFO] Recreating past graphs. That may take some considerable time.")
-            past_graphs = self._rebuild_past_graphs()
-            self._save_past_graphs(past_graphs, past_graphs_destination)
-            self.past_graphs_location = past_graphs_destination
-        if query:
-            prepare_query:Query = prepareQuery(self.query)
-            algebra:CompValue = prepare_query.algebra
-            self.vars_list = algebra["PV"]
-            if algebra.name != "SelectQuery":
-                raise ValueError("Only SELECT queries are allowed")
+        self.explicit_query = query
+        self.triples = self._process_query(query)
+        self.relevant_graphs = self._rebuild_relevant_graphs()
     
-    def _rebuild_past_graphs(self):
-        deltas = self._rebuild_deltas()
-        past_graphs = self._complete_past_graphs(deltas)
-        return past_graphs
-    
-    def _rebuild_deltas(self) -> Dict[str, ConjunctiveGraph]:
-        dict_of_snapshots:Dict[str, Set] = dict()
-        query_times = f"""
-            SELECT DISTINCT ?time
-            WHERE {{
-                ?snapshot <{ProvEntity.iri_generated_at_time}> ?future;
-                    <{ProvEntity.iri_was_derived_from}> ?other_snapshot.
-                ?other_snapshot <{ProvEntity.iri_generated_at_time}> ?time.
-            }}
-        """
-        times = Sparql().run_select_query(query_times)
-        for time in times:
-            query_entities_at_time = f"""
-                SELECT DISTINCT ?s
-                WHERE {{
-                    ?snapshot <{ProvEntity.iri_generated_at_time}> "{time[0]}"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
-                            <{ProvEntity.iri_specialization_of}> ?s.
-                    ?other_snapshot <{ProvEntity.iri_was_derived_from}> ?snapshot.
-                }}
-            """
-            entities_at_time = Sparql().run_select_query(query_entities_at_time)
-            for entity_at_time in entities_at_time:
-                dict_of_snapshots.setdefault(time[0], set())
-                dict_of_snapshots[time[0]].add(entity_at_time[0])        
-        past_graphs = dict()
-        pbar_snapshot = tqdm(total=len(dict_of_snapshots))
-        for snapshot, set_of_entities in dict_of_snapshots.items():
-            graph_at_time = ConjunctiveGraph()
-            pbar_state = tqdm(total=len(set_of_entities))
-            for entity in set_of_entities:
-                agnostic_entity = AgnosticEntity(res=entity, related_entities_history=False)
-                state_at_time = agnostic_entity.get_state_at_time(time=snapshot, get_hooks=False)
-                graph_at_time += state_at_time[0]
-                pbar_state.update(1)
-            pbar_state.close()
-            pbar_snapshot.update(1)
-            past_graphs[snapshot] = graph_at_time
-        pbar_snapshot.close()
-        return past_graphs
-    
-    def _complete_past_graphs(self, deltas:Dict[str, ConjunctiveGraph]):
-        ordered_data: List[Tuple[str, ConjunctiveGraph]] = sorted(
-            deltas.items(),
-            key=lambda x: parser.parse(x[0], ignoretz=True),
-            reverse=True
-        )
-        query_cur_graphs = f"""
-            SELECT DISTINCT ?s ?p ?o ?c
-            WHERE {{
-                GRAPH ?c {{?s ?p ?o}}
-                FILTER NOT EXISTS {{ ?s a <{ProvEntity.iri_entity}>. }}
-            }}
-        """
-        cur_graphs = Sparql().run_construct_query(query_cur_graphs)
-        complete_past_graphs:Dict[str, ConjunctiveGraph] = dict()
-        for index, snapshot_cg in enumerate(ordered_data):
-            snapshot = snapshot_cg[0]
-            cg = snapshot_cg[1]
-            complete_past_graph = ConjunctiveGraph(identifier=f"https://time_agnostic_browser/{snapshot}")
-            complete_past_graph.add((URIRef(f"https://time_agnostic_browser/{snapshot}"), URIRef("http://purl.org/dc/terms/date"), Literal(snapshot)))
-            if index > 0:
-                future_snapshot = ordered_data[index-1][0]
-                future_cg = deltas[future_snapshot]
-                for subject in cg.subjects():
-                    future_cg.remove((subject, None, None))
-                complete_past_graph += future_cg + cg
-            else:
-                for subject in cg.subjects():
-                    cur_graphs.remove((subject, None, None))
-                complete_past_graph += cur_graphs + cg
-            complete_past_graphs[snapshot] = complete_past_graph
-        return complete_past_graphs
-
-    def _save_past_graphs(self, past_graphs:Dict[str, ConjunctiveGraph], destination:str) -> None:
-        if validators.url(destination):
-            for snapshot, cg in past_graphs.items():
-                query_string = f"INSERT DATA {{ GRAPH <https://time_agnostic_browser/{snapshot}> {{"
-                for triple in cg.triples((None, None, None)):
-                    if validators.url(triple[2]):
-                        query_string += f"<{triple[0]}><{triple[1]}><{triple[2]}>."
-                    else:
-                        try:
-                            float(triple[2])
-                            query_string += f"<{triple[0]}><{triple[1]}>{triple[2]}."
-                        except ValueError:
-                            obj = triple[2].replace('\n', '').replace("'", '"')
-                            query_string += f"<{triple[0]}><{triple[1]}>'{obj}'."
-                query_string += f"}}}}; INSERT DATA {{<https://time_agnostic_browser/{snapshot}><http://purl.org/dc/terms/date>'{snapshot}'.}}"
-                sparql = SPARQLWrapper(destination)
-                sparql.setMethod(POST)
-                sparql.setQuery(query_string)
-                sparql.query()
+    def _process_query(self, query:str) -> list:
+        algebra:CompValue = prepareQuery(query).algebra
+        if algebra.name != "SelectQuery":
+            raise ValueError("Only SELECT queries are allowed")
+        triples_dict = algebra["p"]["p"]["p"]
+        if "triples" in triples_dict:
+            triples = triples_dict["triples"]
         else:
-            sum_of_cgs = ConjunctiveGraph()            
-            for _, cg in past_graphs.items():
-                for quad in cg.quads():
-                    sum_of_cgs.add(quad)
-            cg_bytes = sum_of_cgs.serialize(format="json-ld")
-            cg_string = cg_bytes.decode("utf8")
-            cg_json = json.loads(cg_string)
-            FileManager(path=destination).dump_json(cg_json)
+            triples = triples_dict["p1"]["triples"] + triples_dict["p2"]["triples"]
+        return triples
     
+    def _rebuild_relevant_entity(self, entity:str, reconstructed_entities:set, relevant_entities_graphs:dict):
+        if isinstance(entity, URIRef) and entity not in reconstructed_entities:
+            agnostic_entity = AgnosticEntity(entity, False)
+            entity_history = agnostic_entity.get_history()
+            if entity_history[entity]:
+                relevant_entities_graphs.update(entity_history) 
+            reconstructed_entities.add(entity)
+    
+    def _align_snapshots(self, relevant_entities_graphs:Dict[str, Dict[str, ConjunctiveGraph]]) -> Dict[str, ConjunctiveGraph]:
+        relevant_graphs:Dict[str, ConjunctiveGraph] = dict()
+        # Merge entities based on snapshots
+        for _, snapshots in relevant_entities_graphs.items():
+            for snapshot, relevant_graph in snapshots.items():
+                if snapshot in relevant_graphs:
+                    for quad in relevant_graph.quads():
+                        relevant_graphs[snapshot].add(quad)
+                else:
+                    relevant_graphs[snapshot] = relevant_graph
+        # If an entity hasn't changed, copy it
+        ordered_data: List[Tuple[str, ConjunctiveGraph]] = sorted(
+            relevant_graphs.items(),
+            key=lambda x: parser.parse(x[0]),
+            reverse=False
+        )
+        for index, se_cg in enumerate(ordered_data):
+            if index > 0:
+                next_se = ordered_data[index-1][0]
+                for subject in relevant_graphs[next_se].subjects():
+                    if (subject, None, None, None) not in se_cg[1]:
+                        for quad in relevant_graphs[next_se].quads((subject, None, None, None)):
+                            relevant_graphs[se_cg[0]].add(quad)
+        return relevant_graphs
+    
+    def _rebuild_relevant_graphs(self) -> Dict[str, ConjunctiveGraph]:
+        reconstructed_entities = set()
+        relevant_entities_graphs:Dict[str, Dict[str, ConjunctiveGraph]] = dict()
+        for triple in self.triples:
+            self._rebuild_relevant_entity(triple[0], reconstructed_entities, relevant_entities_graphs)
+            self._rebuild_relevant_entity(triple[2], reconstructed_entities, relevant_entities_graphs)
+        relevant_graphs = self._align_snapshots(relevant_entities_graphs)
+        self._explicit_query(relevant_graphs, reconstructed_entities, relevant_entities_graphs)
+        return relevant_graphs
+        
+    def _explicit_query(self, relevant_graphs:Dict[str, ConjunctiveGraph], reconstructed_entities:set, relevant_entities_graphs:dict) -> str:
+        triples_to_explicit = {triple for triple in self.triples if isinstance(triple[0], Variable) or isinstance(triple[2], Variable)}
+        triples_to_explicit_by_time:Dict[str, Dict[str, List]] = dict()
+        for se, _ in relevant_graphs.items():
+            triples_to_explicit_by_time[se] = dict()
+            for triple in self.triples:
+                variables = [f"?{el}" for el in triple if isinstance(el, Variable)]
+                for variable in variables:
+                    triples_to_explicit_by_time[se][variable] = triple
+        # variables_cur_values = dict()
+        # explicit_triples_by_time:Dict[str, Dict[str, List]] = dict()
+        # while len(triples_to_explicit) > 0:
+            # to_add = set()
+            # to_remove = set()
+        runs = len(triples_to_explicit)
+        while runs:
+            # to_add = set()
+            # explicit_vars = set()
+            for triple in triples_to_explicit:
+                solvable_triple = [f"<{el}>" if isinstance(el, URIRef) else f"?{el}" if isinstance(el, Variable) else el for el in triple]
+                variables = [x for x in solvable_triple if x.startswith("?")]
+                if len(variables) == 1:
+                    # explicit_triples = list()
+                    variable = variables[0]
+                    variable_index = solvable_triple.index(variable)
+                    query_to_identify = f"""
+                        CONSTRUCT {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
+                        WHERE {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
+                    """
+                    # variables_cur_values[variable] = variable
+                    for snapshot, relevant_graph in relevant_graphs.items():
+                        results = relevant_graph.query(query_to_identify)
+                        for result in results:
+                            explicit_var = result[variable_index]
+                            # explicit_vars.add(explicit_var)
+                            explicit_triple = list(triple)
+                            explicit_triple[variable_index] = explicit_var
+                            triples_to_explicit_by_time[snapshot][variable] = explicit_triple 
+                            self._rebuild_relevant_entity(explicit_var, reconstructed_entities, relevant_entities_graphs)
+                            # split_query = self.explicit_query.split("WHERE")
+                            # self.explicit_query = split_query[0] + "WHERE" + split_query[1].replace(variables_cur_values[variable], f"<{explicit_var}>")
+                            # explicit_triples.extend(self._process_query(self.explicit_query))
+                            # variables_cur_values[variable] = f"<{explicit_var}>"
+                    relevant_graphs = self._align_snapshots(relevant_entities_graphs)
+                    # to_add.update(explicit_triples)
+                #     to_remove.add(triple)
+                # else:
+                #     to_remove.add(triple)
+            # for triple in list(triples_to_explicit):
+            #     new_tuple = (el for el in triple if el not in explicit_vars)
+            #     for el in triple:
+            #         print(el)
+            runs -= 1
+            # triples_to_explicit.update(to_add)
+            # triples_to_explicit -= to_remove
+        pprint(triples_to_explicit_by_time)
+        
     def run_agnostic_query(self) -> Dict[str, Set[Tuple]]:
         """
         It launches a time agnostic query, 
@@ -177,61 +176,16 @@ class AgnosticQuery:
         :returns Dict[str, Set[Tuple]] -- A dictionary is returned in which the keys correspond to the recorded snapshots, while the values correspond to a set of tuples containing the query results at that snapshot, where the positional value of the elements in the tuples is equivalent to the order of the variables indicated in the query.
         """
         agnostic_result = dict()
-        present = Sparql().run_select_query(self.query)
-        now = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-        agnostic_result[now] = present
-        if validators.url(self.past_graphs_location):
-            agnostic_result.update(self._query_agnostic_triplestore())
-        else:
-            agnostic_result.update(self._query_agnostic_file())
-        return agnostic_result
-
-    def _query_agnostic_triplestore(self):
-        agnostic_result = dict()
-        query_other_dates = """
-            SELECT DISTINCT ?g ?date
-            WHERE {
-                GRAPH ?g {?s ?p ?o}
-                ?g <http://purl.org/dc/terms/date> ?date.
-            }
-        """
-        split_query = re.split("WHERE", self.query, re.IGNORECASE)
-        sparql = SPARQLWrapper(self.past_graphs_location)
-        sparql.setMethod(POST)
-        sparql.setQuery(query_other_dates)
-        sparql.setReturnFormat(JSON)
-        other_dates = sparql.queryAndConvert()
-        for g in other_dates["results"]["bindings"]:
-            agnositc_query = split_query[0] + f"FROM <{g['g']['value']}> WHERE" + split_query[1]
-            sparql.setQuery(agnositc_query)
-            results = sparql.queryAndConvert()
-            output = set()
-            for result_dict in results["results"]["bindings"]:
-                results_list = list()
-                for var in self.vars_list:
-                    if str(var) in result_dict:
-                        results_list.append(result_dict[str(var)]["value"])
-                    else:
-                        results_list.append(None)
-                output.add(tuple(results_list))
-            agnostic_result[g['date']['value']] = output
-        return agnostic_result
-
-    def _query_agnostic_file(self):
-        agnostic_result = dict()
-        past_graphs = ConjunctiveGraph()
-        past_graphs.parse(location=self.past_graphs_location, format="json-ld")
-        contexts = past_graphs.contexts()
-        for context in contexts:
-            date = list(context.objects(subject=URIRef(context.identifier), predicate=URIRef("http://purl.org/dc/terms/date")))[0]
-            results = context.query(self.query)
+        for snapshot, graph in self.relevant_graphs.items():
+            # print(snapshot, _to_nt_sorted_list(graph), "\n")
+            results = graph.query(self.query)
             output = set()
             for result in results:
                 result_tuple = tuple(str(var) for var in result)
                 output.add(result_tuple)
-            agnostic_result[str(date)] = output
+            agnostic_result[snapshot] = output
         return agnostic_result
-    
+
         
 
     

@@ -102,7 +102,7 @@ class Sparql:
         return output
     
     @classmethod
-    def _get_tuples_from_triplestores(cls, query:dict, storer:list) -> Set[Tuple]:
+    def _get_tuples_from_triplestores(cls, query:str, storer:list) -> Set[Tuple]:
         output = set()
         storer = storer["triplestore_urls"]
         for url in storer:

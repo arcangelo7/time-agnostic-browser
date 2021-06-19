@@ -29,7 +29,7 @@ from time_agnostic_browser.support import FileManager, _to_dict_of_nt_sorted_lis
 
 class Test_AgnosticEntity(unittest.TestCase):
     def test_get_history(self):
-        input = "https://github.com/arcangelo7/time_agnostic/id/1"
+        input = "https://github.com/arcangelo7/time_agnostic/ra/3"
         output = _to_dict_of_nt_sorted_lists(AgnosticEntity(input).get_history())
         expected_output = {
             'https://github.com/arcangelo7/time_agnostic/id/1': {
