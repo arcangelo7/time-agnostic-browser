@@ -168,7 +168,7 @@ class AgnosticQuery:
                             explicit_triples.setdefault(se, dict())
                             explicit_triples[se][var] = explicit_var
                             self._rebuild_relevant_entity(explicit_var)
-                        self._align_snapshots()
+            self._align_snapshots()
         return explicit_triples
     
     def _update_vars_to_explicit(self, solved_variables:Dict[str, Dict[str, str]]) -> None:
