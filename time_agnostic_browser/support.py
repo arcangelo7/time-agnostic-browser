@@ -14,11 +14,12 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 
-from typing import Dict
+from typing import Dict, List
 
 import json, os, zipfile
 from zipfile import ZipFile
 from rdflib.graph import ConjunctiveGraph
+from rdflib import URIRef, Literal
 
 
 class FileManager:
@@ -85,14 +86,39 @@ def _to_nt_sorted_list(cg:ConjunctiveGraph) -> list:
     sorted_nt_list = sorted([triple.replace("b\'", "").strip() for triple in nt_list if triple != "\\n'"])
     return sorted_nt_list
 
-def _to_dict_of_nt_sorted_lists(dictionary:Dict[str, Dict[str, ConjunctiveGraph]]) -> dict:
+def _to_dict_of_nt_sorted_lists(dictionary:Dict[str, Dict[str, ConjunctiveGraph]]) -> Dict[str, Dict[str, List]]:
+    dict_of_nt_sorted_lists = dict()
     for key, value in dictionary.items():
         if isinstance(value, ConjunctiveGraph):
-            dictionary[key] = _to_nt_sorted_list(value)
+            dict_of_nt_sorted_lists[key] = _to_nt_sorted_list(value)
         else:
             for snapshot, cg in value.items():
-                value[snapshot] = _to_nt_sorted_list(cg)
-    return dictionary
+                dict_of_nt_sorted_lists.setdefault(key, dict())
+                dict_of_nt_sorted_lists[key][snapshot] = _to_nt_sorted_list(cg)
+    return dict_of_nt_sorted_lists
+
+def _to_dict_of_conjunctive_graphs(dictionary:Dict[str, Dict[str, List]]) -> Dict[str, Dict[str, ConjunctiveGraph]]:
+    dict_of_conjunctive_graphs = dict()
+    for key, value in dictionary.items():
+        if isinstance(value, list):
+            cg = ConjunctiveGraph()
+            for triple in value:
+                to_add = [URIRef(el.replace("<", "").replace(">", "")) if el.startswith("<") else Literal(el.replace('"', '')) for el in triple.split()]
+                if to_add:
+                    cg.add(to_add)
+            dict_of_conjunctive_graphs.setdefault(key, dict())
+            dict_of_conjunctive_graphs[key] = cg
+        else:
+            for snapshot, triples in value.items():
+                cg = ConjunctiveGraph()
+                for triple in triples:
+                    to_add = [URIRef(el.replace("<", "").replace(">", "")) if el.startswith("<") else Literal(el.replace('"', '')) for el in triple.split()]
+                    if to_add:
+                        cg.add(to_add)
+                dict_of_conjunctive_graphs.setdefault(key, dict())
+                dict_of_conjunctive_graphs[key][snapshot] = cg
+    return dict_of_conjunctive_graphs
+
 
 
 

@@ -1,0 +1,2506 @@
+[
+    {
+        "@graph": [
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/790",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1023/a:1012794810883"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/672",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1016/0048-7333(84)90018-0"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/11",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/bf02130469"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/17",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/bf02017766"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/3",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/bf02019280"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/762",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1016/j.joi.2016.02.007"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/688",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/orcid"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "http://orcid.org/0000-0002-6461-3266"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/627",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/orcid"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "http://orcid.org/0000-0002-6461-3266"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/331",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/s11192-009-0146-3"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/419",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1016/j.joi.2016.02.007"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/8",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/bf02019280"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/600",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/s11192-009-0146-3"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/706",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/s11192-011-0355-4"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/18",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/bf02130469"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/804",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/s11192-011-0355-4"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/12",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/bf02019280"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/10",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/bf02130469"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/740",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/s11434-007-0145-9"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/7",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/bf02017766"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/157",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1023/a:1012794810883"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/16",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/bf02017766"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/877",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/s11192-009-0146-3"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/737",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1073/pnas.0507655102"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/398",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1073/pnas.0507655102"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/630",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/orcid"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "http://orcid.org/0000-0002-6461-3266"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/13",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/bf02017766"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/14",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/bf02019280"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/524",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1016/0048-7333(84)90018-0"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/id/402",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/doi"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "10.1007/s11434-007-0145-9"
+                    }
+                ]
+            }
+        ],
+        "@id": "https://github.com/arcangelo7/time_agnostic/id/"
+    },
+    {
+        "@graph": [
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/8",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/16"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/698",
+                "@type": [
+                    "http://purl.org/spar/fabio/JournalArticle",
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://prismstandard.org/namespaces/basic/2.0/publicationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#date",
+                        "@value": "2015-12-30"
+                    }
+                ],
+                "http://purl.org/dc/terms/title": [
+                    {
+                        "@value": "A taxonomy of S&T indicators"
+                    }
+                ],
+                "http://purl.org/spar/cito/cites": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/701"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/856"
+                    }
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/521"
+                    }
+                ],
+                "http://purl.org/spar/pro/isDocumentContextFor": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/535"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#embodiment": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/204"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/203"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/205"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#part": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/159"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/158"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#partOf": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/700"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/9",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/12"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/11",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/11"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/1066",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/600"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/948",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/419"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/562",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/419"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/215",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://prismstandard.org/namespaces/basic/2.0/publicationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#gYear",
+                        "@value": "2001"
+                    }
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/790"
+                    }
+                ],
+                "http://purl.org/spar/pro/isDocumentContextFor": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/178"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#embodiment": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/61"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#partOf": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/217"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/17",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/16"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/457",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/600"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/926",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/402"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/774",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression",
+                    "http://purl.org/spar/fabio/JournalArticle"
+                ],
+                "http://prismstandard.org/namespaces/basic/2.0/publicationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#date",
+                        "@value": "2016-07-23"
+                    }
+                ],
+                "http://purl.org/dc/terms/title": [
+                    {
+                        "@value": "New features of CitedReferencesExplorer (CRExplorer)"
+                    }
+                ],
+                "http://purl.org/spar/cito/cites": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/778"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/780"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/779"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/1066"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/781"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/777"
+                    }
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/593"
+                    }
+                ],
+                "http://purl.org/spar/pro/isDocumentContextFor": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/549"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/551"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/550"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/552"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#embodiment": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/220"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/219"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/218"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#part": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/224"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/221"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/219"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/220"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/223"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/222"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#partOf": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/776"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/12",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/11"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/702",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/672"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/4",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/12"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/856",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/672"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/419",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression",
+                    "http://purl.org/spar/fabio/JournalArticle"
+                ],
+                "http://prismstandard.org/namespaces/basic/2.0/publicationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#date",
+                        "@value": "2016-02-15"
+                    }
+                ],
+                "http://purl.org/dc/terms/title": [
+                    {
+                        "@value": "A bibliometric analysis to illustrate the role of an embedded research capability in South African National Parks"
+                    }
+                ],
+                "http://purl.org/spar/cito/cites": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/434"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/433"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/423"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/1066"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/424"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/449"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/453"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/441"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/422"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/458"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/444"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/428"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/454"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/429"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/450"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/451"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/436"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/438"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/456"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/462"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/460"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/427"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/463"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/426"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/440"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/432"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/435"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/464"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/461"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/437"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/459"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/425"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/442"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/448"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/446"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/443"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/439"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/447"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/431"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/445"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/430"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/452"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/455"
+                    }
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/293"
+                    }
+                ],
+                "http://purl.org/spar/pro/isDocumentContextFor": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/373"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/375"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/377"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/374"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/376"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#embodiment": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/132"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/133"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/131"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#part": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/41"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/79"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/74"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/51"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/72"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/65"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/82"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/64"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/81"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/61"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/50"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/68"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/52"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/57"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/58"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/56"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/83"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/80"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/59"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/63"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/46"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/47"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/78"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/45"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/44"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/75"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/54"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/71"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/55"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/42"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/67"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/43"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/48"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/69"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/62"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/73"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/60"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/76"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/70"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/66"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/77"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/53"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/49"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#partOf": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/421"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/14",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/16"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/923",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/398"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/541",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/398"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/988",
+                "@type": [
+                    "http://purl.org/spar/fabio/JournalArticle",
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://prismstandard.org/namespaces/basic/2.0/publicationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#date",
+                        "@value": "2016-10-01"
+                    }
+                ],
+                "http://purl.org/dc/terms/title": [
+                    {
+                        "@value": "Refrain from adopting the combination of citation and journal metrics to grade publications, as used in the Italian national research assessment exercise (VQR 2011–2014)"
+                    }
+                ],
+                "http://purl.org/spar/cito/cites": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/995"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/1001"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/891"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/999"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/993"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/994"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/1000"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/1002"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/998"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/992"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/997"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/996"
+                    }
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/802"
+                    }
+                ],
+                "http://purl.org/spar/pro/isDocumentContextFor": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/589"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/588"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#embodiment": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/253"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/251"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/252"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#part": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/410"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/408"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/402"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/405"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/401"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/400"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/411"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/403"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/406"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/409"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/407"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/404"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#partOf": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/990"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/905",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression",
+                    "http://purl.org/spar/fabio/JournalArticle"
+                ],
+                "http://prismstandard.org/namespaces/basic/2.0/publicationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#date",
+                        "@value": "2016-10-01"
+                    }
+                ],
+                "http://purl.org/dc/terms/title": [
+                    {
+                        "@value": "Do Hirsch-type indices behave the same in assessing single publications? An empirical study of 29 bibliometric indicators"
+                    }
+                ],
+                "http://purl.org/spar/cito/cites": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/950"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/937"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/912"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/920"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/927"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/925"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/949"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/944"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/919"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/942"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/915"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/545"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/943"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/932"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/929"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/913"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/924"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/939"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/921"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/947"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/940"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/936"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/935"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/930"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/911"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/917"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/945"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/934"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/914"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/918"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/541"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/941"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/922"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/928"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/946"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/938"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/931"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/562"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/951"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/933"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/910"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/908"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/909"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/952"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/916"
+                    }
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/720"
+                    }
+                ],
+                "http://purl.org/spar/pro/isDocumentContextFor": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/576"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/577"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/578"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#embodiment": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/243"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/244"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/242"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#part": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/335"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/363"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/360"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/352"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/341"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/365"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/344"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/348"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/330"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/368"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/326"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/351"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/364"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/362"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/346"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/347"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/353"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/355"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/336"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/339"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/370"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/361"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/350"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/357"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/338"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/337"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/354"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/349"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/369"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/333"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/340"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/345"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/359"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/367"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/331"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/358"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/334"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/343"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/332"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/342"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/328"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/327"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/329"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/356"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/366"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#partOf": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/907"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/976",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/790"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/782",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/600"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/962",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression",
+                    "http://purl.org/spar/fabio/JournalArticle"
+                ],
+                "http://prismstandard.org/namespaces/basic/2.0/publicationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#date",
+                        "@value": "2016-10-01"
+                    }
+                ],
+                "http://purl.org/dc/terms/title": [
+                    {
+                        "@value": "The contribution of ethnic groups to Malaysian scientific output, 1982–2014, and the effects of the new economic policy"
+                    }
+                ],
+                "http://purl.org/spar/cito/cites": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/985"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/967"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/987"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/982"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/971"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/981"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/965"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/986"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/984"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/968"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/215"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/970"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/972"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/983"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/969"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/973"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/966"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/975"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/980"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/974"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/978"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/977"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/979"
+                    }
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/776"
+                    }
+                ],
+                "http://purl.org/spar/pro/isDocumentContextFor": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/583"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/582"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/585"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/586"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/584"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#embodiment": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/250"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/248"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/249"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#part": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/388"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/399"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/380"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/385"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/389"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/392"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/383"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/391"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/378"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/390"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/386"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/395"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/387"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/394"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/397"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/398"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/384"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/393"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/377"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/396"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/381"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/382"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/379"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#partOf": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/964"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/19",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/11"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/15",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/12"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/13",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/12"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/18",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/16"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/545",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/402"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/891",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/706"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/991",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/706"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/br/1",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression",
+                    "http://purl.org/spar/fabio/JournalArticle"
+                ],
+                "http://prismstandard.org/namespaces/basic/2.0/publicationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#gYearMonth",
+                        "@value": "1992-10"
+                    }
+                ],
+                "http://purl.org/dc/terms/title": [
+                    {
+                        "@value": "A validation study of “LEXIMAPPE”"
+                    }
+                ],
+                "http://purl.org/spar/cito/cites": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/14"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/7"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/11"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/5"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/10"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/20"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/13"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/16"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/6"
+                    }
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/1"
+                    }
+                ],
+                "http://purl.org/spar/pro/isDocumentContextFor": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/1"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#embodiment": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/re/1"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#part": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/17"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/8"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/1"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/4"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/6"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/11"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/7"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/16"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/14"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/12"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/9"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/5"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/15"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/10"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/3"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/2"
+                    },
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/be/13"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#partOf": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/3"
+                    }
+                ]
+            }
+        ],
+        "@id": "https://github.com/arcangelo7/time_agnostic/br/"
+    },
+    {
+        "@graph": [
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ra/569",
+                "@type": [
+                    "http://xmlns.com/foaf/0.1/Agent"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/688"
+                    }
+                ],
+                "http://xmlns.com/foaf/0.1/familyName": [
+                    {
+                        "@value": "Hartley"
+                    }
+                ],
+                "http://xmlns.com/foaf/0.1/givenName": [
+                    {
+                        "@value": "James"
+                    }
+                ],
+                "http://xmlns.com/foaf/0.1/name": [
+                    {
+                        "@value": "James Hartley"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ra/556",
+                "@type": [
+                    "http://xmlns.com/foaf/0.1/Agent"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/688"
+                    }
+                ],
+                "http://xmlns.com/foaf/0.1/familyName": [
+                    {
+                        "@value": "Hartley"
+                    }
+                ],
+                "http://xmlns.com/foaf/0.1/givenName": [
+                    {
+                        "@value": "James"
+                    }
+                ],
+                "http://xmlns.com/foaf/0.1/name": [
+                    {
+                        "@value": "James Hartley"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ra/558",
+                "@type": [
+                    "http://xmlns.com/foaf/0.1/Agent"
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/id/688"
+                    }
+                ],
+                "http://xmlns.com/foaf/0.1/familyName": [
+                    {
+                        "@value": "Hartley"
+                    }
+                ],
+                "http://xmlns.com/foaf/0.1/givenName": [
+                    {
+                        "@value": "James"
+                    }
+                ],
+                "http://xmlns.com/foaf/0.1/name": [
+                    {
+                        "@value": "James Hartley"
+                    }
+                ]
+            }
+        ],
+        "@id": "https://github.com/arcangelo7/time_agnostic/ra/"
+    },
+    {
+        "@graph": [
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ar/558",
+                "@type": [
+                    "http://purl.org/spar/pro/RoleInTime"
+                ],
+                "http://purl.org/spar/pro/isHeldBy": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ra/556"
+                    }
+                ],
+                "http://purl.org/spar/pro/withRole": [
+                    {
+                        "@id": "http://purl.org/spar/pro/author"
+                    }
+                ],
+                "https://w3id.org/oc/ontology/hasNext": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/559"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ar/569",
+                "@type": [
+                    "http://purl.org/spar/pro/RoleInTime"
+                ],
+                "http://purl.org/spar/pro/isHeldBy": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ra/556"
+                    }
+                ],
+                "http://purl.org/spar/pro/withRole": [
+                    {
+                        "@id": "http://purl.org/spar/pro/author"
+                    }
+                ],
+                "https://w3id.org/oc/ontology/hasNext": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/ar/570"
+                    }
+                ]
+            }
+        ],
+        "@id": "https://github.com/arcangelo7/time_agnostic/ar/"
+    },
+    {
+        "@graph": [
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/9",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#gYearMonth",
+                        "@value": "1992-10"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/11"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/1"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/400",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#date",
+                        "@value": "2016-10-01"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/891"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/988"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/16",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#gYearMonth",
+                        "@value": "1992-10"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/11"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/1"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/344",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#date",
+                        "@value": "2016-10-01"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/545"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/905"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/6",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#gYearMonth",
+                        "@value": "1992-10"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/13"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/1"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/12",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#gYearMonth",
+                        "@value": "1992-10"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/13"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/1"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/341",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#date",
+                        "@value": "2016-10-01"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/541"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/905"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/388",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#date",
+                        "@value": "2016-10-01"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/215"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/962"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/76",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#date",
+                        "@value": "2016-02-15"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/1066"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/419"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/159",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#date",
+                        "@value": "2015-12-30"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/856"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/698"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/5",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#gYearMonth",
+                        "@value": "1992-10"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/14"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/1"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/14",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#gYearMonth",
+                        "@value": "1992-10"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/14"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/1"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/224",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#date",
+                        "@value": "2016-07-23"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/1066"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/774"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/1",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#gYearMonth",
+                        "@value": "1992-10"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/13"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/1"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/15",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#gYearMonth",
+                        "@value": "1992-10"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/14"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/1"
+                    }
+                ]
+            },
+            {
+                "@id": "https://github.com/arcangelo7/time_agnostic/ci/366",
+                "@type": [
+                    "http://purl.org/spar/cito/Citation"
+                ],
+                "http://purl.org/spar/cito/hasCitationCreationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#date",
+                        "@value": "2016-10-01"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitedEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/562"
+                    }
+                ],
+                "http://purl.org/spar/cito/hasCitingEntity": [
+                    {
+                        "@id": "https://github.com/arcangelo7/time_agnostic/br/905"
+                    }
+                ]
+            }
+        ],
+        "@id": "https://github.com/arcangelo7/time_agnostic/ci/"
+    }
+]
