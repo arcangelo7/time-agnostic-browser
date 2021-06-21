@@ -22,17 +22,12 @@ from time_agnostic_browser.agnostic_query import AgnosticQuery
 
 
 query = """
-    prefix literal: <http://www.essepuntato.it/2010/06/literalreification/>
-    prefix datacite: <http://purl.org/spar/datacite/>
     prefix pro: <http://purl.org/spar/pro/>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-    SELECT DISTINCT ?o ?id ?value
+    SELECT ?o
     WHERE {
         <https://github.com/arcangelo7/time_agnostic/ar/15519> pro:isHeldBy ?o;
         OPTIONAL {<https://github.com/arcangelo7/time_agnostic/ar/15519> rdf:type pro:RoleInTime.}
-        ?o datacite:hasIdentifier ?id.
-        ?id literal:hasLiteralValue ?value.
     }
 """ 
 # agnostic_query = AgnosticQuery(query=query)
@@ -40,6 +35,7 @@ query = """
 agnostic_query = AgnosticQuery(query=query)
 # results = agnostic_query.run_agnostic_query()
 # pprint(results)
+
 # agnostic_query = AgnosticQuery(past_graphs_location="past_graphs.json", query=query)
 
 # results = agnostic_query.run_agnostic_query()

@@ -73,12 +73,10 @@ class AgnosticQuery:
         algebra:CompValue = prepareQuery(self.query).algebra
         if algebra.name != "SelectQuery":
             raise ValueError("Only SELECT queries are allowed.")
-        triples_dict = algebra["p"]["p"]["p"]
         triples = list()
-        # The structure of the triples_dict dictionary can be extremely variable 
-        # in case of one or more OPTIONAL in the query: it is necessary to navigate   
-        # the dictionary recursively in search of the values of the "triples" keys.
-        self._tree_traverse(triples_dict, "triples", triples)
+        # The algebra can be extremely variable in case of one or more OPTIONAL in the query: 
+        # it is necessary to navigate the dictionary recursively in search of the values of the "triples" keys.
+        self._tree_traverse(algebra, "triples", triples)
         triples_with_hook = [triple for triple in triples if isinstance(triple[0], URIRef) or isinstance(triple[2], URIRef)]
         if not triples_with_hook:
             raise ValueError("Could not perform a generic time agnostic query. Please, specify at least one entity within the query.")
@@ -153,7 +151,7 @@ class AgnosticQuery:
         for se, vars in self.vars_to_explicit_by_time.items():
             for var, triples in vars.items():
                 for triple in triples:
-                    solvable_triple = [f"<{el}>" if isinstance(el, URIRef) else f"?{el}" if isinstance(el, Variable) else el for el in triple]
+                    solvable_triple = [el.n3() for el in triple]
                     variables = [x for x in solvable_triple if x.startswith("?")]
                     if len(variables) == 1:
                         variable = variables[0]
@@ -168,7 +166,7 @@ class AgnosticQuery:
                             explicit_triples.setdefault(se, dict())
                             explicit_triples[se][var] = explicit_var
                             self._rebuild_relevant_entity(explicit_var)
-            self._align_snapshots()
+                        self._align_snapshots()
         return explicit_triples
     
     def _update_vars_to_explicit(self, solved_variables:Dict[str, Dict[str, str]]) -> None:

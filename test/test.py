@@ -1229,6 +1229,115 @@ class Test_AgnosticQuery(unittest.TestCase):
         } 
         self.assertEqual(agnostic_query.vars_to_explicit_by_time, expected_output)
 
+    def test_run_agnostic_query_easy(self):
+        query = """
+            prefix pro: <http://purl.org/spar/pro/>
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            SELECT DISTINCT ?o
+            WHERE {
+                <https://github.com/arcangelo7/time_agnostic/ar/15519> pro:isHeldBy ?o;
+                    rdf:type pro:RoleInTime.
+            }
+        """
+        agnostic_query = AgnosticQuery(query)
+        output = agnostic_query.run_agnostic_query()
+        expected_output = {'2021-05-07T09:59:15+00:00': set(), '2021-05-31T18:19:47+00:00': {('https://github.com/arcangelo7/time_agnostic/ra/15519',)}, '2021-06-01T18:46:41+00:00': {('https://github.com/arcangelo7/time_agnostic/ra/4',)}}
+        self.assertEqual(output, expected_output)
+
+    def test_run_agnostic_query_optional(self):
+        query = """
+            prefix pro: <http://purl.org/spar/pro/>
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            SELECT DISTINCT ?o
+            WHERE {
+                <https://github.com/arcangelo7/time_agnostic/ar/15519> pro:isHeldBy ?o.
+                OPTIONAL {<https://github.com/arcangelo7/time_agnostic/ar/4> rdf:type pro:RoleInTime.}
+            }
+        """
+        agnostic_query = AgnosticQuery(query)
+        output = agnostic_query.run_agnostic_query()
+        expected_output = {'2021-06-01T18:46:41+00:00': {('https://github.com/arcangelo7/time_agnostic/ra/4',)}, '2021-05-31T18:19:47+00:00': {('https://github.com/arcangelo7/time_agnostic/ra/15519',)}, '2021-05-07T09:59:15+00:00': {('https://github.com/arcangelo7/time_agnostic/ra/15519',)}}
+        self.assertEqual(output, expected_output)
+
+    def test_run_agnostic_query_more_variables_and_more_optionals(self):
+        query = """
+            prefix literal: <http://www.essepuntato.it/2010/06/literalreification/>
+            prefix datacite: <http://purl.org/spar/datacite/>
+            prefix pro: <http://purl.org/spar/pro/>
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            SELECT DISTINCT ?o ?id ?value
+            WHERE {
+                <https://github.com/arcangelo7/time_agnostic/ar/15519> pro:isHeldBy ?o.
+                OPTIONAL {<https://github.com/arcangelo7/time_agnostic/ar/15519> rdf:type pro:RoleInTime.}
+                ?o datacite:hasIdentifier ?id.
+                OPTIONAL {?id literal:hasLiteralValue ?value.}
+            }
+        """
+        agnostic_query = AgnosticQuery(query)
+        output = agnostic_query.run_agnostic_query()
+        expected_output = {
+            '2021-05-31T18:19:47+00:00': {
+                ('https://github.com/arcangelo7/time_agnostic/ra/15519', 
+                'https://github.com/arcangelo7/time_agnostic/id/85509', 
+                'http://orcid.org/0000-0002-3259-2309')
+            }, 
+            '2021-05-07T09:59:15+00:00': {
+                ('https://github.com/arcangelo7/time_agnostic/ra/15519', 
+                'https://github.com/arcangelo7/time_agnostic/id/85509', 
+                'http://orcid.org/0000-0002-3259-2309')
+            }, 
+            '2021-06-01T18:46:41+00:00': {
+                ('https://github.com/arcangelo7/time_agnostic/ra/4', 
+                'https://github.com/arcangelo7/time_agnostic/id/14', 
+                'http://orcid.org/0000-0002-3259-2309')
+            }
+        }
+        self.assertEqual(output, expected_output)
+
+    def test_run_agnostic_object_only(self):
+        query = """
+            prefix pro: <http://purl.org/spar/pro/>
+            SELECT DISTINCT ?s
+            WHERE {
+                ?s pro:isHeldBy <https://github.com/arcangelo7/time_agnostic/ra/4>.
+            }    
+        """
+        agnostic_query = AgnosticQuery(query)
+        output = agnostic_query.run_agnostic_query()
+        expected_output = {
+            '2021-06-01T18:46:41+00:00': {
+                ('https://github.com/arcangelo7/time_agnostic/ar/4',), ('https://github.com/arcangelo7/time_agnostic/ar/15519',)
+            }, 
+            '2021-05-07T09:59:15+00:00': {
+                ('https://github.com/arcangelo7/time_agnostic/ar/4',)
+            }, 
+            '2021-05-31T18:19:47+00:00': {
+                ('https://github.com/arcangelo7/time_agnostic/ar/4',)
+            }, 
+            '2021-06-01T13:05:11+00:00': {
+                ('https://github.com/arcangelo7/time_agnostic/ar/4',)
+            }, 
+            '2021-06-01T14:19:35+00:00': {
+                ('https://github.com/arcangelo7/time_agnostic/ar/4',)
+            }, 
+            '2021-06-01T17:43:15+00:00': {
+                ('https://github.com/arcangelo7/time_agnostic/ar/4',)
+            }, 
+            '2021-06-01T01:02:01+00:00': {
+                ('https://github.com/arcangelo7/time_agnostic/ar/4',)
+            }, 
+            '2021-05-31T20:31:01+00:00': {
+                ('https://github.com/arcangelo7/time_agnostic/ar/4',)
+            }, '2021-06-01T15:29:01+00:00': {
+                ('https://github.com/arcangelo7/time_agnostic/ar/4',)
+            }, 
+            '2021-05-31T19:25:57+00:00': {
+                ('https://github.com/arcangelo7/time_agnostic/ar/4',)
+            }
+        }
+        self.assertEqual(output, expected_output)
+
+
 class Test_support(unittest.TestCase):
     def test_import_json(self):
         input = "./test/config.json"
