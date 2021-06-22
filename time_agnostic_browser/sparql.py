@@ -24,6 +24,7 @@ from rdflib.term import URIRef, Literal
 from rdflib.plugins.sparql.processor import prepareQuery
 from rdflib.plugins.sparql.sparql import Query
 from rdflib.plugins.sparql.parserutils import CompValue
+from time_agnostic_browser import prov_entity
 
 
 from time_agnostic_browser.support import FileManager
@@ -58,6 +59,7 @@ class Sparql:
     """
     def __init__(self, config_path:str=CONFIG_PATH):
         self.config_path = config_path
+        self.prov_properties = ProvEntity.get_prov_properties()
         self.config:list = FileManager(self.config_path).import_json()
         self._hack_dates()
 
@@ -77,7 +79,7 @@ class Sparql:
         :returns:  Set[Tuple] -- A set of tuples, in which the positional value of the tuples corresponds to the positional value of the variables indicated in the query.
         """
         output = set()
-        if ProvEntity.PROV in query:
+        if any(uri in query for uri in self.prov_properties):
             storer:dict = self.config["provenance"]
         else:
             storer:dict = self.config["dataset"]
@@ -131,7 +133,7 @@ class Sparql:
         :returns:  ConjunctiveGraph -- A ConjunctiveGraph containing the results of the query. 
         """
         cg = ConjunctiveGraph()
-        if ProvEntity.PROV in query:
+        if any(uri in query for uri in self.prov_properties):
             storer:dict = self.config["provenance"]
         else:
             storer:dict = self.config["dataset"]
@@ -203,8 +205,3 @@ class Sparql:
             limit = int(algebra["p"]["length"])
             input = input[:limit]
         return input
-        
-
-
-    
-

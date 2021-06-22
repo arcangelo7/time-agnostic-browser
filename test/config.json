@@ -5,6 +5,6 @@
     },
     "provenance": {
         "triplestore_urls": [],
-        "file_paths": ["./test/scientometrics_prov.json"]
+        "file_paths": ["./test/prov.json"]
     }
 }

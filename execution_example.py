@@ -22,19 +22,17 @@ from time_agnostic_browser.agnostic_query import AgnosticQuery
 
 
 query = """
-    prefix pro: <http://purl.org/spar/pro/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    SELECT ?o
-    WHERE {
-        <https://github.com/arcangelo7/time_agnostic/ar/15519> pro:isHeldBy ?o;
-        OPTIONAL {<https://github.com/arcangelo7/time_agnostic/ar/15519> rdf:type pro:RoleInTime.}
-    }
+PREFIX pro: <http://purl.org/spar/pro/>
+SELECT DISTINCT ?s
+WHERE {
+    <https://github.com/arcangelo7/time_agnostic/ra/4> pro:isHeldBy/pro:isHeldby ?o.
+}
 """ 
 # agnostic_query = AgnosticQuery(query=query)
 # agnostic_query = AgnosticQuery(past_graphs_location="http://localhost:19999/blazegraph/sparql", query=query)
 agnostic_query = AgnosticQuery(query=query)
+# print(agnostic_query.reconstructed_entities)
 # results = agnostic_query.run_agnostic_query()
-# pprint(results)
 
 # agnostic_query = AgnosticQuery(past_graphs_location="past_graphs.json", query=query)
 

@@ -16,7 +16,6 @@
 
 from typing import Set, Tuple, Dict, List, Union
 from SPARQLWrapper.Wrapper import SPARQLWrapper, POST, JSON
-from rdflib.plugins.sparql.parser import Var
 
 import warnings
 from copy import deepcopy
@@ -24,6 +23,7 @@ from rdflib.plugins.sparql.processor import prepareQuery
 from rdflib.plugins.sparql.sparql import Query
 from rdflib.plugins.sparql.parserutils import CompValue
 from rdflib import ConjunctiveGraph, URIRef, Literal, Variable
+from rdflib.paths import Path
 from tqdm import tqdm
 from datetime import datetime
 from dateutil import parser
@@ -52,22 +52,12 @@ class AgnosticQuery:
     """
     def __init__(self, query:str):
         self.query = query
-        self.complex_query = False
         self.vars_to_explicit_by_time:Dict[str, Dict[str, List]] = dict()
         self.reconstructed_entities = set()
         self.relevant_entities_graphs:Dict[URIRef, Dict[str, ConjunctiveGraph]] = dict()
         self.relevant_graphs:Dict[str, ConjunctiveGraph] = dict()
         self.triples = self._process_query()
         self._rebuild_relevant_graphs()
-    
-    def _tree_traverse(self, tree:dict, key:str, values:List[Tuple]) -> None:
-        for k, v in tree.items():
-            if k == key:
-                values.extend(v)
-            elif isinstance(v, dict):
-                found = self._tree_traverse(v, key, values)
-                if found is not None:  
-                    values.extend(found)
     
     def _process_query(self) -> List[Tuple]:
         algebra:CompValue = prepareQuery(self.query).algebra
@@ -79,16 +69,36 @@ class AgnosticQuery:
         self._tree_traverse(algebra, "triples", triples)
         triples_with_hook = [triple for triple in triples if isinstance(triple[0], URIRef) or isinstance(triple[2], URIRef)]
         if not triples_with_hook:
-            raise ValueError("Could not perform a generic time agnostic query. Please, specify at least one entity within the query.")
-        easy_triples = [triple for triple in triples_with_hook if isinstance(triple[0], URIRef)]
-        if not easy_triples:
-            warnings.warn("If the query contains only explicit objects it will take more time. To speed up the query, specify at least one subject.")
-            self.complex_query = True
+            raise ValueError("Could not perform a generic time agnostic query. Please, specify at least one subject entity within the query.")
+        triples_with_subject = [triple for triple in triples_with_hook if isinstance(triple[0], URIRef)]
+        if not triples_with_subject:
+            raise ValueError("Specify at least one subject.")
+        triples_with_path = [triple for triple in triples_with_hook if isinstance(triple[1], Path)]
+        if triples_with_path:
+            raise ValueError("Cannot evaluate time agnostic queries containing paths.")
         return triples
-    
+
+    def _tree_traverse(self, tree:dict, key:str, values:List[Tuple]) -> None:
+        for k, v in tree.items():
+            if k == key:
+                values.extend(v)
+            elif isinstance(v, dict):
+                found = self._tree_traverse(v, key, values)
+                if found is not None:  
+                    values.extend(found)
+        
+    def _rebuild_relevant_graphs(self) -> None:
+        # First, the graphs of the hooks are reconstructed
+        for triple in self.triples:
+            self._rebuild_relevant_entity(triple[0])
+            self._rebuild_relevant_entity(triple[2])
+        self._align_snapshots()
+        # Then, the graphs of the entities obtained from the hooks are reconstructed
+        self._solve_variables()
+
     def _rebuild_relevant_entity(self, entity:Union[URIRef, Literal]):
         if isinstance(entity, URIRef) and entity not in self.reconstructed_entities:
-            agnostic_entity = AgnosticEntity(entity, self.complex_query)
+            agnostic_entity = AgnosticEntity(entity, False)
             entity_history = agnostic_entity.get_history()
             if entity_history[entity]:
                 self.relevant_entities_graphs.update(entity_history) 
@@ -124,16 +134,16 @@ class AgnosticQuery:
                             if se not in self.relevant_entities_graphs[subject]:
                                 for quad in self.relevant_graphs[previous_se].quads((subject, None, None, None)):
                                     self.relevant_graphs[se].add(quad)
-    
-    def _rebuild_relevant_graphs(self) -> None:
-        # First, the graphs of the hooks are reconstructed
-        for triple in self.triples:
-            self._rebuild_relevant_entity(triple[0])
-            self._rebuild_relevant_entity(triple[2])
-        self._align_snapshots()
-        # Then, the graphs of the entities obtained from the hooks are reconstructed
-        self._solve_variables()
-    
+            
+    def _solve_variables(self) -> None:
+        runs = self._get_vars_to_explicit_by_time()
+        while runs:
+            solved_variables = self._explicit_solvable_variables()
+            if not solved_variables:
+                return 
+            self._update_vars_to_explicit(solved_variables)
+            runs -= 1
+
     def _get_vars_to_explicit_by_time(self) -> int:
         number_of_vars = set()
         for se, _ in self.relevant_graphs.items():
@@ -177,15 +187,6 @@ class AgnosticQuery:
                         new_triple = tuple(explicit_el if el == explicit_var else el for el in triple)
                         new_list_of_triples = [new_triple if x == triple else x for x in self.vars_to_explicit_by_time[se][var]]
                         self.vars_to_explicit_by_time[se][var] = new_list_of_triples              
-        
-    def _solve_variables(self) -> None:
-        runs = self._get_vars_to_explicit_by_time()
-        while runs:
-            solved_variables = self._explicit_solvable_variables()
-            if not solved_variables:
-                return 
-            self._update_vars_to_explicit(solved_variables)
-            runs -= 1
         
     def run_agnostic_query(self) -> Dict[str, Set[Tuple]]:
         """
