@@ -38,16 +38,16 @@
                         <div class="tab-content" id="tabcontent2">
                             <div class="tab-pane fade show active" id="tabs-icons-text-1" role="tabpanel" aria-labelledby="tabs-icons-text-1-tab">
                                 <label for="searchByURI">Enter a URI to begin navigation</label>
-                                <input type="text" class="form-control" id="searchByURI" aria-describedby="emailHelp">
-                                <button id="exploreSubmit" class="btn btn-primary btn-pill text-secondary m-5">
+                                <input type="text" class="form-control" id="searchByURI" aria-describedby="searchByURI" value=https://github.com/arcangelo7/time_agnostic/ar/15519> 
+                                <button id="exploreSubmit" class="btn btn-outline-primary m-5">
                                     <span class="mr-1"><span class="fas fa-search"></span></span>
                                     Submit the query
                                 </button>
                             </div>
                             <div class="tab-pane fade" id="tabs-icons-text-2" role="tabpanel" aria-labelledby="tabs-icons-text-2-tab">
                                 <label for="sparqlEndpoint">Input a SPARQL query</label>
-                                <textarea class="form-control" id="sparqlEndpoint" rows="10"></textarea>
-                                <button id="sparqlQuerySubmit" class="btn btn-primary btn-pill text-secondary m-5">
+                                <textarea class="form-control" id="sparqlEndpoint" rows="7"></textarea>
+                                <button id="sparqlQuerySubmit" class="btn btn-outline-primary m-5">
                                     <span class="mr-1"><span class="fas fa-search"></span></span>
                                     Submit the query
                                 </button>
@@ -57,22 +57,7 @@
                     <!-- End of Tab Content -->
                 </div>
             </div>
-        </div>
-    </section>
-    <section>
-        <div class="container-fluid">
-            <div id="alert" class="container"></div>
-            <div class="row d-flex justify-content-center">
-                <div id="exploreResults">
-                
-                </div>
-                <table id="sparqlResults" class ="table shadow-soft rounded col-sm-10 col-md-6">
-                    <thead>
-                        <tr>
-                        </tr> 
-                    </thead>  
-                    <tbody></tbody>     
-                </table>
+            <div id="alert">
             </div>
         </div>
     </section>

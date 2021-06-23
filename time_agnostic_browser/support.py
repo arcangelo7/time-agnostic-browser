@@ -14,6 +14,7 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 
+from pprint import pprint
 from typing import Dict, List
 
 import json, os, zipfile
@@ -82,8 +83,8 @@ class FileManager:
 def _to_nt_sorted_list(cg:ConjunctiveGraph) -> list:
     if cg is None:
         return None
-    nt_list = str(cg.serialize(format="nt")).split(".\\n")
-    sorted_nt_list = sorted([triple.replace("b\'", "").strip() for triple in nt_list if triple != "\\n'"])
+    nt_list = str(cg.serialize(format="nt")).split(r".\n")
+    sorted_nt_list = sorted([triple.replace("b\'", "").strip() for triple in nt_list if triple != r"b'\n'" and triple != r"\n'"])
     return sorted_nt_list
 
 def _to_dict_of_nt_sorted_lists(dictionary:Dict[str, Dict[str, ConjunctiveGraph]]) -> Dict[str, Dict[str, List]]:

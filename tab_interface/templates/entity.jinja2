@@ -1,30 +1,95 @@
 {% extends 'base.jinja2' %}
 {% block content %}
+    <nav class="navbar navbar-expand-lg navbar-transparent navbar-light navbar-theme-dark my-5">
+        <div class="container position-relative">
+            <a class="navbar-brand-light me-lg-3" href="/">
+                <i class="navbar-brand-light fas fa-3x fa-history"></i>
+            </a>
+            <div class="navbar-collapse collapse w-100" id="navbar-default-primary">
+                <div class="navbar-collapse-header">
+                    <div class="row">
+                        <div class="col-6 collapse-brand">
+                            <a href="/">
+                                <i class="navbar-brand-light fas fa-3x fa-history"></i>
+                            </a>
+                        </div>
+                        <div class="col-6 collapse-close">
+                            <i class="fas fa-times" data-toggle="collapse" role="button"
+                                data-target="#navbar-default-primary" aria-controls="navbar-default-primary"
+                                aria-expanded="false" aria-label="Toggle navigation"></i>
+                        </div>
+                    </div>
+                </div>
+                <ul class="navbar-nav navbar-nav-hover align-items-lg-center">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="d-flex align-items-center">
+                <button class="navbar-toggler ms-2" type="button" data-toggle="collapse"
+                    data-target="#navbar-default-primary" aria-controls="navbar-default-primary"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </div>
+    </nav>
     <section class="section">
         <div class="container">
             <h1 class="mb-5" id="resName">{{res}}</h1>
+            <div id="alert" class="container"></div>
+            <div class="timeline timeline-five px-3 px-sm-0">
             {% for snapshot in history[res] %}
-                <div class="card bg-primary border-light shadow-soft my-5 p-5">
-                    <h3>{{snapshot}}</h3>
-                    <table class ="table table-responsive col-sm-11 mb-5">
-                        <thead>
-                            <tr>
-                                <th id="outgoingPredicate">Predicate</th>
-                                <th id="outgoingObject">Object</th>
-                            </tr> 
-                        </thead>  
-                        <tbody>
-                            {% for triple in history[res][snapshot] %}
-                                <tr>
-                                    {% set spo = triple.split("&#62; ") %}
-                                    <td headers="outgoingPredicate">{{spo[1]}}</td>
-                                    <td headers="outgoingObject">{{spo[2]}}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>     
-                    </table>
-                </div>
-            {% endfor %}
+                    <div class="row">
+                        <div class="col-auto flex-column d-sm-flex">
+                            <div class="d-flex h-50">
+                                <div class="col middle-line">&nbsp;</div>
+                                <div class="col">&nbsp;</div>
+                            </div>
+                            <span class="m-3">{{snapshot}}</span>
+                            <div class="d-flex h-50">
+                                <div class="col middle-line">&nbsp;</div>
+                                <div class="col">&nbsp;</div>
+                            </div>
+                        </div>
+                        <!-- Timeline item 1 content-->
+                        <div class="col-12 col-lg-12 col-xl-11 my-4">
+                            <div class="card shadow border-gray-300 text-primary p-4">
+                                <div class="card-body">
+                                    {% if history[res][snapshot] %}
+                                        <table class ="table table-responsive col-sm-11 mb-5">
+                                            <thead>
+                                                <tr>
+                                                    <th id="outgoingPredicate">Predicate</th>
+                                                    <th id="outgoingObject">Object</th>
+                                                </tr> 
+                                            </thead>  
+                                            <tbody>
+                                                {% for triple in history[res][snapshot] %}
+                                                    <tr>
+                                                        {% set spo = triple.split() %}
+                                                        <td headers="outgoingPredicate">{{spo[1]}}</td>
+                                                        <td headers="outgoingObject" class="tripleObject">{{spo[2]}}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>     
+                                        </table>  
+                                    {% else %}
+                                        <h5>The entity has been deleted.</h5>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </section>
 {% endblock %}

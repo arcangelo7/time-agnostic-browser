@@ -14,15 +14,11 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 
-import warnings
 from time_agnostic_browser.agnostic_query import AgnosticQuery
 import unittest, datetime, rdflib
 
 from rdflib.graph import ConjunctiveGraph
-from rdflib import Literal, URIRef
-from SPARQLWrapper import JSON, XML
 from pprint import pprint
-from dateutil.tz import tzutc
 
 from time_agnostic_browser.sparql import Sparql
 from time_agnostic_browser.prov_entity import ProvEntity
@@ -581,6 +577,7 @@ class Test_AgnosticEntity(unittest.TestCase):
         input = "2021-05-21T19:08:56+00:00"
         expected_output = datetime.datetime(2021, 5, 21, 19, 8, 56, tzinfo=datetime.timezone.utc)
         self.assertEqual(AgnosticEntity._convert_to_datetime(input), expected_output)
+
 
 class Test_AgnosticQuery(unittest.TestCase):        
     def test__tree_traverse_no_options(self):
@@ -1349,7 +1346,7 @@ class Test_support(unittest.TestCase):
             },
             "provenance": {
                 "triplestore_urls": [],
-                "file_paths": ["./test/scientometrics_prov.json"]
+                "file_paths": ["./test/prov.json"]
             }
         }
         self.assertEqual(FileManager(input).import_json(), expected_output)
