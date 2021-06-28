@@ -138,7 +138,7 @@ class AgnosticEntity:
                 }}
             }}
         """
-        results = list(Sparql().run_select_query(query_snapshots))
+        results = list(Sparql(query_snapshots).run_select_query())
         results.sort(key=lambda x:self._convert_to_datetime(x[1]), reverse=True)
         results_after_time = list()
         for result in results:
@@ -240,7 +240,8 @@ class AgnosticEntity:
             cg_no_pro = entity_current_state[self.res].pop(time)
             cg_no_pro.remove((None, ProvEntity.iri_generated_at_time, None))
             cg_no_pro.remove((None, ProvEntity.iri_has_update_query, None))
-            entity_current_state[self.res][str(time)] = cg_no_pro
+            time_no_tz = parser.parse(time).replace(tzinfo=None)
+            entity_current_state[self.res][time_no_tz.strftime("%Y-%m-%dT%H:%M:%S")] = cg_no_pro
         return entity_current_state
 
     @classmethod
@@ -307,7 +308,7 @@ class AgnosticEntity:
                     BIND (<{self.res}> AS ?s) 
                 }}   
             """
-        return Sparql().run_construct_query(query_dataset)
+        return Sparql(query_dataset).run_construct_query()
 
     def _query_provenance(self) -> ConjunctiveGraph:
         query_provenance = f"""
@@ -323,7 +324,7 @@ class AgnosticEntity:
                 }}   
             }}
         """
-        return Sparql().run_construct_query(query_provenance)
+        return Sparql(query_provenance).run_construct_query()
 
     @classmethod
     def _convert_to_datetime(cls, time_string: str) -> datetime:

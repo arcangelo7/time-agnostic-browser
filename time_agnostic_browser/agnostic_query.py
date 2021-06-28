@@ -20,8 +20,9 @@ from SPARQLWrapper.Wrapper import SPARQLWrapper, POST, JSON
 import warnings
 from copy import deepcopy
 from rdflib.plugins.sparql.processor import prepareQuery
+from rdflib.plugins.sparql.parser import parseUpdate
 from rdflib.plugins.sparql.sparql import Query
-from rdflib.plugins.sparql.parserutils import CompValue
+from rdflib.plugins.sparql.parserutils import Comp, CompValue
 from rdflib import ConjunctiveGraph, URIRef, Literal, Variable
 from rdflib.paths import Path
 from tqdm import tqdm
@@ -67,15 +68,9 @@ class AgnosticQuery:
         # The algebra can be extremely variable in case of one or more OPTIONAL in the query: 
         # it is necessary to navigate the dictionary recursively in search of the values of the "triples" keys.
         self._tree_traverse(algebra, "triples", triples)
-        triples_with_hook = [triple for triple in triples if isinstance(triple[0], URIRef) or isinstance(triple[2], URIRef)]
-        if not triples_with_hook:
-            raise ValueError("Could not perform a generic time agnostic query. Please, specify at least one subject entity within the query.")
-        triples_with_subject = [triple for triple in triples_with_hook if isinstance(triple[0], URIRef)]
-        if not triples_with_subject:
-            raise ValueError("Specify at least one subject.")
-        triples_with_path = [triple for triple in triples_with_hook if isinstance(triple[1], Path)]
-        if triples_with_path:
-            raise ValueError("Cannot evaluate time agnostic queries containing paths.")
+        triples_without_hook = [triple for triple in triples if isinstance(triple[0], Variable) and isinstance(triple[1], Variable) and isinstance(triple[2], Variable)]
+        if triples_without_hook:
+            raise ValueError("Could not perform a generic time agnostic query. Please, specify at least one URI or Literal within the query.")
         return triples
 
     def _tree_traverse(self, tree:dict, key:str, values:List[Tuple]) -> None:
@@ -90,8 +85,24 @@ class AgnosticQuery:
     def _rebuild_relevant_graphs(self) -> None:
         # First, the graphs of the hooks are reconstructed
         for triple in self.triples:
-            self._rebuild_relevant_entity(triple[0])
-            self._rebuild_relevant_entity(triple[2])
+            if self._is_isolated(triple):
+                solvable_triple = [el.n3() for el in triple]
+                query_to_identify = f"""
+                    CONSTRUCT {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
+                    WHERE {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
+                """
+                present_results = Sparql(query_to_identify).run_construct_query()
+                print(f"[AgnosticQuery:INFO] Rebuilding current relevant entities for the triple {solvable_triple}.")
+                pbar = tqdm(total=len(present_results))
+                for result in present_results:
+                    self._rebuild_relevant_entity(result[0])
+                    self._rebuild_relevant_entity(result[2])
+                    pbar.update(1)
+                pbar.close()
+                self._find_entities_in_update_queries(triple)
+            else:
+                self._rebuild_relevant_entity(triple[0])
+                self._rebuild_relevant_entity(triple[2])
         self._align_snapshots()
         # Then, the graphs of the entities obtained from the hooks are reconstructed
         self._solve_variables()
@@ -136,26 +147,45 @@ class AgnosticQuery:
                                     self.relevant_graphs[se].add(quad)
             
     def _solve_variables(self) -> None:
-        runs = self._get_vars_to_explicit_by_time()
-        while runs:
+        self._get_vars_to_explicit_by_time()
+        while self._there_are_variables():
             solved_variables = self._explicit_solvable_variables()
             if not solved_variables:
                 return 
             self._update_vars_to_explicit(solved_variables)
-            runs -= 1
 
-    def _get_vars_to_explicit_by_time(self) -> int:
-        number_of_vars = set()
+    def _get_vars_to_explicit_by_time(self) -> None:
         for se, _ in self.relevant_graphs.items():
             self.vars_to_explicit_by_time[se] = dict()
             for triple in self.triples:
-                variables = [el for el in triple if isinstance(el, Variable)]
-                number_of_vars.update(variables)
-                for variable in variables:
-                    self.vars_to_explicit_by_time[se].setdefault(variable, list()) 
-                    self.vars_to_explicit_by_time[se][variable].append(triple)
-        return len(number_of_vars)
+                if not self._is_isolated(triple):
+                    variables = [el for el in triple if isinstance(el, Variable)]
+                    for variable in variables:
+                        self.vars_to_explicit_by_time[se].setdefault(variable, list()) 
+                        self.vars_to_explicit_by_time[se][variable].append(triple)
     
+    def _there_are_variables(self) -> bool:
+        for _, variables in self.vars_to_explicit_by_time.items():
+            for _, triples in variables.items():
+                for triple in triples:
+                    vars = [el for el in triple if isinstance(el, Variable)]
+                    if vars:
+                        return True
+        return False
+    
+    def _is_isolated(self, triple:tuple) -> bool:
+        if isinstance(triple[2], Variable) and isinstance(triple[0], URIRef):
+            return False
+        variables = [el for el in triple if isinstance(el, Variable)]
+        if not variables:
+            return False
+        for variable in variables:
+            other_triples = {t for t in self.triples if t != triple}
+            for other_triple in other_triples:
+                if variable in other_triple and other_triple.index(variable) == 2:
+                    return False
+        return True
+            
     def _explicit_solvable_variables(self) -> Dict[str, Dict[str, str]]:
         explicit_triples:Dict[str, Dict[str, str]] = dict()
         for se, vars in self.vars_to_explicit_by_time.items():
@@ -163,22 +193,23 @@ class AgnosticQuery:
                 for triple in triples:
                     solvable_triple = [el.n3() for el in triple]
                     variables = [x for x in solvable_triple if x.startswith("?")]
+                    query_to_identify = f"""
+                        CONSTRUCT {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
+                        WHERE {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
+                    """
                     if len(variables) == 1:
                         variable = variables[0]
                         variable_index = solvable_triple.index(variable)
-                        query_to_identify = f"""
-                            CONSTRUCT {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
-                            WHERE {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
-                        """
-                        results = self.relevant_graphs[se].query(query_to_identify)
-                        for result in results:
-                            explicit_var = result[variable_index]
-                            explicit_triples.setdefault(se, dict())
-                            explicit_triples[se][var] = explicit_var
-                            self._rebuild_relevant_entity(explicit_var)
-                        self._align_snapshots()
+                        if variable_index == 2:
+                            results = self.relevant_graphs[se].query(query_to_identify)
+                            for result in results:
+                                explicit_var = result[variable_index]
+                                explicit_triples.setdefault(se, dict())
+                                explicit_triples[se][var] = explicit_var
+                                self._rebuild_relevant_entity(explicit_var)
+                    self._align_snapshots()
         return explicit_triples
-    
+        
     def _update_vars_to_explicit(self, solved_variables:Dict[str, Dict[str, str]]) -> None:
         for se, vars in self.vars_to_explicit_by_time.items():
             for var, triples in vars.items():
@@ -186,7 +217,46 @@ class AgnosticQuery:
                     for explicit_var, explicit_el in solved_variables[se].items():
                         new_triple = tuple(explicit_el if el == explicit_var else el for el in triple)
                         new_list_of_triples = [new_triple if x == triple else x for x in self.vars_to_explicit_by_time[se][var]]
-                        self.vars_to_explicit_by_time[se][var] = new_list_of_triples              
+                        self.vars_to_explicit_by_time[se][var] = new_list_of_triples   
+
+    def _find_entities_in_update_queries(self, triple:tuple):
+        uris_in_triple = {el for el in triple if isinstance(el, URIRef)}
+        relevant_entities_found = set()
+        query_to_identify = f"""
+            PREFIX oco: <https://w3id.org/oc/ontology/>
+            PREFIX prov: <http://www.w3.org/ns/prov#>
+            SELECT DISTINCT ?updateQuery 
+            WHERE {{
+                ?snapshot oco:hasUpdateQuery ?updateQuery.
+        """ 
+        for uri in uris_in_triple:
+            if triple.index(uri) == 0 or triple.index(uri) == 2:
+                self._rebuild_relevant_entity(uri)
+            query_to_identify += f"FILTER CONTAINS (?updateQuery, '<{uri}>')"
+        query_to_identify += "}"
+        results = Sparql(query_to_identify).run_select_query()
+        pbar = tqdm(total=len(results))
+        print(f"[AgnosticQuery:INFO] Searching for relevant entities in relevant update queries.")
+        for result in results:
+            try:
+                update = parseUpdate(result[0])
+                for request in update["request"]:
+                    for quadsNotTriples in request["quads"]["quadsNotTriples"]:
+                        for triple in quadsNotTriples["triples"]:
+                            triple = [el["string"] if "string" in el else el for el in triple]
+                            relevant_entities = set(triple).difference(uris_in_triple) if len(uris_in_triple.intersection(triple)) == len(uris_in_triple) else None
+                            if relevant_entities is not None:
+                                relevant_entities_found.update(relevant_entities)
+                        pbar.update(1)
+            except RecursionError:
+                pbar.update(1)
+        pbar.close()
+        print(f"[AgnosticQuery:INFO] Rebuilding relevant entities' history.")
+        pbar = tqdm(total=len(relevant_entities_found))
+        for relevant_entity_found in relevant_entities_found:
+            self._rebuild_relevant_entity(relevant_entity_found)
+            pbar.update(1)
+        pbar.close()
         
     def run_agnostic_query(self) -> Dict[str, Set[Tuple]]:
         """

@@ -22,20 +22,16 @@ from time_agnostic_browser.agnostic_query import AgnosticQuery
 
 
 query = """
-PREFIX pro: <http://purl.org/spar/pro/>
-SELECT DISTINCT ?s
-WHERE {
-    <https://github.com/arcangelo7/time_agnostic/ra/4> pro:isHeldBy/pro:isHeldby ?o.
-}
-""" 
-# agnostic_query = AgnosticQuery(query=query)
-# agnostic_query = AgnosticQuery(past_graphs_location="http://localhost:19999/blazegraph/sparql", query=query)
-agnostic_query = AgnosticQuery(query=query)
-# print(agnostic_query.reconstructed_entities)
-# results = agnostic_query.run_agnostic_query()
+    prefix cito: <http://purl.org/spar/cito/>
+    prefix datacite: <http://purl.org/spar/datacite/>
+    select distinct ?elt_1
+    where {
+        ?elt_1 datacite:hasIdentifier ?id_1;
+                datacite:hasIdentifier ?id_2.
+        <https://github.com/arcangelo7/time_agnostic/br/102437> cito:cites ?elt_1.
+        FILTER (?id_1 != ?id_2)
+    }
+"""
+agnostic_query = AgnosticQuery(query)
 
-# agnostic_query = AgnosticQuery(past_graphs_location="past_graphs.json", query=query)
-
-# results = agnostic_query.run_agnostic_query()
-# pprint(results)
                             

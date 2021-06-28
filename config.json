@@ -6,5 +6,6 @@
     "provenance": {
         "triplestore_urls": ["http://localhost:9999/blazegraph/sparql"],
         "file_paths": []
-    }
+    },
+    "triplestore_name": "Blazegraph"
 }
