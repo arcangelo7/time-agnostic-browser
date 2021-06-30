@@ -53,7 +53,7 @@ class AgnosticQuery:
     """
     def __init__(self, query:str):
         self.query = query
-        self.vars_to_explicit_by_time:Dict[str, Dict[str, List]] = dict()
+        self.vars_to_explicit_by_time:Dict[str, Dict[str, set]] = dict()
         self.reconstructed_entities = set()
         self.relevant_entities_graphs:Dict[URIRef, Dict[str, ConjunctiveGraph]] = dict()
         self.relevant_graphs:Dict[str, ConjunctiveGraph] = dict()
@@ -159,10 +159,10 @@ class AgnosticQuery:
             self.vars_to_explicit_by_time[se] = dict()
             for triple in self.triples:
                 if not self._is_isolated(triple):
-                    variables = [el for el in triple if isinstance(el, Variable)]
+                    variables = set(el for el in triple if isinstance(el, Variable))
                     for variable in variables:
-                        self.vars_to_explicit_by_time[se].setdefault(variable, list()) 
-                        self.vars_to_explicit_by_time[se][variable].append(triple)
+                        self.vars_to_explicit_by_time[se].setdefault(variable, set()) 
+                        self.vars_to_explicit_by_time[se][variable].add(triple)
     
     def _there_are_variables(self) -> bool:
         for _, variables in self.vars_to_explicit_by_time.items():
@@ -187,37 +187,56 @@ class AgnosticQuery:
         return True
             
     def _explicit_solvable_variables(self) -> Dict[str, Dict[str, str]]:
-        explicit_triples:Dict[str, Dict[str, str]] = dict()
+        explicit_triples:Dict[str, Dict[str, set]] = dict()
         for se, vars in self.vars_to_explicit_by_time.items():
             for var, triples in vars.items():
                 for triple in triples:
                     solvable_triple = [el.n3() for el in triple]
                     variables = [x for x in solvable_triple if x.startswith("?")]
-                    query_to_identify = f"""
-                        CONSTRUCT {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
-                        WHERE {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
-                    """
                     if len(variables) == 1:
+                        # TODO: si ripete!
+                        query_to_identify = f"""
+                            CONSTRUCT {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
+                            WHERE {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
+                        """
                         variable = variables[0]
                         variable_index = solvable_triple.index(variable)
                         if variable_index == 2:
                             results = self.relevant_graphs[se].query(query_to_identify)
                             for result in results:
-                                explicit_var = result[variable_index]
                                 explicit_triples.setdefault(se, dict())
-                                explicit_triples[se][var] = explicit_var
-                                self._rebuild_relevant_entity(explicit_var)
+                                explicit_triples[se].setdefault(var, set())
+                                explicit_triples[se][var].add(result)
+                                self._rebuild_relevant_entity(result[variable_index])
                     self._align_snapshots()
         return explicit_triples
         
-    def _update_vars_to_explicit(self, solved_variables:Dict[str, Dict[str, str]]) -> None:
+    def _update_vars_to_explicit(self, solved_variables:Dict[str, Dict[Variable, Set[Tuple]]]):
+        vars_to_explicit_by_time:Dict[str, Dict[Variable, set]] = dict()
         for se, vars in self.vars_to_explicit_by_time.items():
+            vars_to_explicit_by_time.setdefault(se, dict())
             for var, triples in vars.items():
+                vars_to_explicit_by_time[se].setdefault(var, set())
+                new_triples = set()
                 for triple in triples:
-                    for explicit_var, explicit_el in solved_variables[se].items():
-                        new_triple = tuple(explicit_el if el == explicit_var else el for el in triple)
-                        new_list_of_triples = [new_triple if x == triple else x for x in self.vars_to_explicit_by_time[se][var]]
-                        self.vars_to_explicit_by_time[se][var] = new_list_of_triples   
+                    if se in solved_variables:
+                        for solved_var, solved_triples in solved_variables[se].items():
+                            if solved_var in triple:
+                                for solved_triple in solved_triples:
+                                    new_triple = None
+                                    if solved_triple[0] != triple[0] and solved_triple[1] == triple[1]:
+                                        continue
+                                    elif solved_triple[0] == triple[0] and solved_triple[1] == triple[1]: 
+                                        new_triple = solved_triple 
+                                    else:
+                                        new_triple = (solved_triple[2], triple[1], triple[2])
+                                    new_triples.add(new_triple)
+                            elif not any(isinstance(el, Variable) for el in triple):
+                                new_triples.add(triple)
+                            elif not any(var for var in solved_variables[se] if var in triple):
+                                new_triples.add(triple)
+                vars_to_explicit_by_time[se][var] = new_triples 
+        self.vars_to_explicit_by_time = vars_to_explicit_by_time
 
     def _find_entities_in_update_queries(self, triple:tuple):
         uris_in_triple = {el for el in triple if isinstance(el, URIRef)}

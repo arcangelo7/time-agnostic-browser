@@ -22,16 +22,17 @@ from time_agnostic_browser.agnostic_query import AgnosticQuery
 
 
 query = """
-    prefix cito: <http://purl.org/spar/cito/>
-    prefix datacite: <http://purl.org/spar/datacite/>
-    select distinct ?elt_1
-    where {
-        ?elt_1 datacite:hasIdentifier ?id_1;
-                datacite:hasIdentifier ?id_2.
-        <https://github.com/arcangelo7/time_agnostic/br/102437> cito:cites ?elt_1.
-        FILTER (?id_1 != ?id_2)
-    }
+    PREFIX pro: <http://purl.org/spar/pro/>
+    PREFIX cito: <http://purl.org/spar/cito/>
+    PREFIX datacite: <http://purl.org/spar/datacite/>
+    SELECT DISTINCT ?br ?id
+    WHERE {
+        <https://github.com/arcangelo7/time_agnostic/br/2> cito:cites ?br.
+        ?br datacite:hasIdentifier ?id.
+    } 
 """
 agnostic_query = AgnosticQuery(query)
+# output = agnostic_query.run_agnostic_query()
+# pprint(output)
 
                             
