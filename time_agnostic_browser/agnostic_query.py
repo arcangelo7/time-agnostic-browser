@@ -15,14 +15,12 @@
 # SOFTWARE.
 
 from typing import Set, Tuple, Dict, List, Union
-from SPARQLWrapper.Wrapper import SPARQLWrapper, POST, JSON
 
-import warnings
 from copy import deepcopy
+import rdflib
 from rdflib.plugins.sparql.processor import prepareQuery
 from rdflib.plugins.sparql.parser import parseUpdate
-from rdflib.plugins.sparql.sparql import Query
-from rdflib.plugins.sparql.parserutils import Comp, CompValue
+from rdflib.plugins.sparql.parserutils import CompValue
 from rdflib import ConjunctiveGraph, URIRef, Literal, Variable
 from rdflib.paths import Path
 from tqdm import tqdm
@@ -51,9 +49,10 @@ class AgnosticQuery:
     .. CAUTION::
         Depending on the amount of snapshots, reconstructing the past state of knowledge may take a long time. For example, reconstructing 26 different states in each of which 23,000 entities have changed takes about 12 hours. The experiment was performed with an Intel Core i5 8500, a 1 TB SSD Nvme Pcie 3.0, and 32 GB RAM DDR4 3000 Mhz CL15.
     """
-    def __init__(self, query:str):
+    def __init__(self, query:str, type_of_entities=set()):
         self.query = query
-        self.vars_to_explicit_by_time:Dict[str, Dict[str, set]] = dict()
+        self.type_of_entities = type_of_entities
+        self.vars_to_explicit_by_time:Dict[str, Set[Tuple]] = dict()
         self.reconstructed_entities = set()
         self.relevant_entities_graphs:Dict[URIRef, Dict[str, ConjunctiveGraph]] = dict()
         self.relevant_graphs:Dict[str, ConjunctiveGraph] = dict()
@@ -156,103 +155,107 @@ class AgnosticQuery:
 
     def _get_vars_to_explicit_by_time(self) -> None:
         for se, _ in self.relevant_graphs.items():
-            self.vars_to_explicit_by_time[se] = dict()
+            self.vars_to_explicit_by_time[se] = set()
             for triple in self.triples:
-                if not self._is_isolated(triple):
-                    variables = set(el for el in triple if isinstance(el, Variable))
-                    for variable in variables:
-                        self.vars_to_explicit_by_time[se].setdefault(variable, set()) 
-                        self.vars_to_explicit_by_time[se][variable].add(triple)
+                if any(el for el in triple if isinstance(el, Variable)) and not self._is_isolated(triple):
+                    self.vars_to_explicit_by_time[se].add(triple)
     
     def _there_are_variables(self) -> bool:
-        for _, variables in self.vars_to_explicit_by_time.items():
-            for _, triples in variables.items():
-                for triple in triples:
-                    vars = [el for el in triple if isinstance(el, Variable)]
-                    if vars:
-                        return True
+        for _, triples in self.vars_to_explicit_by_time.items():
+            for triple in triples:
+                vars = [el for el in triple if isinstance(el, Variable)]
+                if vars:
+                    return True
         return False
     
+    def _there_is_transitive_closure(self, variable:Variable, triples:Set[Tuple]) -> bool:
+        there_is_transitive_closure = False
+        for triple in triples:
+            if variable in triple and triple.index(variable) == 2:
+                if isinstance(triple[0], URIRef):
+                    return True
+                elif isinstance(triple[0], Variable):
+                    other_triples = {t for t in triples if t != triple}
+                    there_is_transitive_closure = self._there_is_transitive_closure(triple[0], other_triples)
+        return there_is_transitive_closure
+    
     def _is_isolated(self, triple:tuple) -> bool:
-        if isinstance(triple[2], Variable) and isinstance(triple[0], URIRef):
+        if isinstance(triple[0], URIRef):
             return False
         variables = [el for el in triple if isinstance(el, Variable)]
         if not variables:
             return False
         for variable in variables:
             other_triples = {t for t in self.triples if t != triple}
-            for other_triple in other_triples:
-                if variable in other_triple and other_triple.index(variable) == 2:
-                    return False
+            if self._there_is_transitive_closure(variable, other_triples):
+                return False
         return True
             
     def _explicit_solvable_variables(self) -> Dict[str, Dict[str, str]]:
         explicit_triples:Dict[str, Dict[str, set]] = dict()
-        for se, vars in self.vars_to_explicit_by_time.items():
-            for var, triples in vars.items():
-                for triple in triples:
+        for se, triples in self.vars_to_explicit_by_time.items():
+            for triple in triples:
+                variables = [el for el in triple if isinstance(el, Variable)]
+                if len(variables) == 1:
                     solvable_triple = [el.n3() for el in triple]
-                    variables = [x for x in solvable_triple if x.startswith("?")]
-                    if len(variables) == 1:
-                        # TODO: si ripete!
-                        query_to_identify = f"""
-                            CONSTRUCT {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
-                            WHERE {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
-                        """
-                        variable = variables[0]
-                        variable_index = solvable_triple.index(variable)
-                        if variable_index == 2:
-                            results = self.relevant_graphs[se].query(query_to_identify)
-                            for result in results:
-                                explicit_triples.setdefault(se, dict())
-                                explicit_triples[se].setdefault(var, set())
-                                explicit_triples[se][var].add(result)
-                                self._rebuild_relevant_entity(result[variable_index])
-                    self._align_snapshots()
+                    query_to_identify = f"""
+                        CONSTRUCT {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
+                        WHERE {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
+                    """
+                    variable = variables[0]
+                    variable_index = triple.index(variable)
+                    if variable_index == 2:
+                        results = self.relevant_graphs[se].query(query_to_identify)
+                        for result in results:
+                            explicit_triples.setdefault(se, dict())
+                            explicit_triples[se].setdefault(variable, set())
+                            explicit_triples[se][variable].add(result)
+                            self._rebuild_relevant_entity(result[variable_index])
+                self._align_snapshots()
         return explicit_triples
         
     def _update_vars_to_explicit(self, solved_variables:Dict[str, Dict[Variable, Set[Tuple]]]):
         vars_to_explicit_by_time:Dict[str, Dict[Variable, set]] = dict()
-        for se, vars in self.vars_to_explicit_by_time.items():
-            vars_to_explicit_by_time.setdefault(se, dict())
-            for var, triples in vars.items():
-                vars_to_explicit_by_time[se].setdefault(var, set())
-                new_triples = set()
-                for triple in triples:
-                    if se in solved_variables:
-                        for solved_var, solved_triples in solved_variables[se].items():
-                            if solved_var in triple:
-                                for solved_triple in solved_triples:
-                                    new_triple = None
-                                    if solved_triple[0] != triple[0] and solved_triple[1] == triple[1]:
-                                        continue
-                                    elif solved_triple[0] == triple[0] and solved_triple[1] == triple[1]: 
-                                        new_triple = solved_triple 
-                                    else:
-                                        new_triple = (solved_triple[2], triple[1], triple[2])
-                                    new_triples.add(new_triple)
-                            elif not any(isinstance(el, Variable) for el in triple):
-                                new_triples.add(triple)
-                            elif not any(var for var in solved_variables[se] if var in triple):
-                                new_triples.add(triple)
-                vars_to_explicit_by_time[se][var] = new_triples 
+        for se, triples in self.vars_to_explicit_by_time.items():
+            vars_to_explicit_by_time.setdefault(se, set())
+            new_triples = set()
+            for triple in triples:
+                if se in solved_variables:
+                    for solved_var, solved_triples in solved_variables[se].items():
+                        if solved_var in triple:
+                            for solved_triple in solved_triples:
+                                new_triple = None
+                                if solved_triple[0] != triple[0] and solved_triple[1] == triple[1]:
+                                    continue
+                                elif solved_triple[0] == triple[0] and solved_triple[1] == triple[1]: 
+                                    new_triple = solved_triple 
+                                else:
+                                    new_triple = (solved_triple[2], triple[1], triple[2])
+                                new_triples.add(new_triple)
+                        elif not any(isinstance(el, Variable) for el in triple):
+                            new_triples.add(triple)
+                        elif not any(var for var in solved_variables[se] if var in triple):
+                            new_triples.add(triple)
+            vars_to_explicit_by_time[se] = new_triples 
         self.vars_to_explicit_by_time = vars_to_explicit_by_time
 
     def _find_entities_in_update_queries(self, triple:tuple):
         uris_in_triple = {el for el in triple if isinstance(el, URIRef)}
         relevant_entities_found = set()
         query_to_identify = f"""
-            PREFIX oco: <https://w3id.org/oc/ontology/>
-            PREFIX prov: <http://www.w3.org/ns/prov#>
             SELECT DISTINCT ?updateQuery 
             WHERE {{
-                ?snapshot oco:hasUpdateQuery ?updateQuery.
+                ?snapshot <{ProvEntity.iri_has_update_query}> ?updateQuery.
         """ 
         for uri in uris_in_triple:
             if triple.index(uri) == 0 or triple.index(uri) == 2:
                 self._rebuild_relevant_entity(uri)
             query_to_identify += f"FILTER CONTAINS (?updateQuery, '<{uri}>')"
+        filter_by_types = (" UNION ".join(f"?snapshot <{ProvEntity.iri_specialization_of}>/a <{type_of_entity}>" 
+            for type_of_entity in self.type_of_entities))
+        query_to_identify += filter_by_types
         query_to_identify += "}"
+        print(query_to_identify)
         results = Sparql(query_to_identify).run_select_query()
         pbar = tqdm(total=len(results))
         print(f"[AgnosticQuery:INFO] Searching for relevant entities in relevant update queries.")
