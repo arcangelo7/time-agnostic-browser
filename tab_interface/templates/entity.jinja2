@@ -44,7 +44,17 @@
     <section class="section">
         <div class="container">
             <h1 class="mb-5" id="resName">{{res}}</h1>
-            <div id="alert" class="container"></div>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <span class="fas fa-exclamation-circle"></span>
+                            {{message}}
+                            <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+                        </div>   
+                    {% endfor %}      
+                {% endif %}
+            {% endwith %}
             <div class="timeline timeline-five px-3 px-sm-0">
             {% for snapshot in history[res] %}
                     <div class="row">
@@ -74,9 +84,8 @@
                                             <tbody>
                                                 {% for triple in history[res][snapshot] %}
                                                     <tr>
-                                                        {% set spo = triple.split() %}
-                                                        <td headers="outgoingPredicate">{{spo[1]}}</td>
-                                                        <td headers="outgoingObject" class="tripleObject">{{spo[2]}}</td>
+                                                        <td headers="outgoingPredicate">{{triple[1]}}</td>
+                                                        <td headers="outgoingObject" class="tripleObject">{{triple[2]}}</td>
                                                     </tr>
                                                 {% endfor %}
                                             </tbody>     

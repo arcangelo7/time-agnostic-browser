@@ -18,6 +18,7 @@ from typing import Set, Tuple, Dict, List, Union
 
 from copy import deepcopy
 import rdflib
+from rdflib.plugins.sparql.operators import string
 from rdflib.plugins.sparql.processor import prepareQuery
 from rdflib.plugins.sparql.parser import parseUpdate
 from rdflib.plugins.sparql.parserutils import CompValue
@@ -34,6 +35,7 @@ from time_agnostic_browser.agnostic_entity import AgnosticEntity
 
 from pprint import pprint
 
+CONFIG_PATH = "./config.json"
 
 class AgnosticQuery:
     """
@@ -49,9 +51,10 @@ class AgnosticQuery:
     .. CAUTION::
         Depending on the amount of snapshots, reconstructing the past state of knowledge may take a long time. For example, reconstructing 26 different states in each of which 23,000 entities have changed takes about 12 hours. The experiment was performed with an Intel Core i5 8500, a 1 TB SSD Nvme Pcie 3.0, and 32 GB RAM DDR4 3000 Mhz CL15.
     """
-    def __init__(self, query:str, type_of_entities=set()):
+    def __init__(self, query:str, entity_types=set(), config_path:str=CONFIG_PATH):
         self.query = query
-        self.type_of_entities = type_of_entities
+        self.entity_types = entity_types
+        self.config_path = config_path
         self.vars_to_explicit_by_time:Dict[str, Set[Tuple]] = dict()
         self.reconstructed_entities = set()
         self.relevant_entities_graphs:Dict[URIRef, Dict[str, ConjunctiveGraph]] = dict()
@@ -80,17 +83,27 @@ class AgnosticQuery:
                 found = self._tree_traverse(v, key, values)
                 if found is not None:  
                     values.extend(found)
-        
+    
+    def _is_a_new_triple(self, triple:tuple, triples_checked:set) -> bool:
+        for triple_checked in triples_checked:
+            uris_in_triple = {el for el in triple if isinstance(el, URIRef)}
+            uris_in_triple_checked = {el for el in triple_checked if isinstance(el, URIRef)}
+            new_uris = uris_in_triple.difference(uris_in_triple_checked)
+            if not new_uris:
+                return False
+        return True
+            
     def _rebuild_relevant_graphs(self) -> None:
         # First, the graphs of the hooks are reconstructed
+        triples_checked = set()
         for triple in self.triples:
-            if self._is_isolated(triple):
+            if self._is_isolated(triple) and self._is_a_new_triple(triple, triples_checked):
                 solvable_triple = [el.n3() for el in triple]
                 query_to_identify = f"""
                     CONSTRUCT {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
                     WHERE {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
                 """
-                present_results = Sparql(query_to_identify).run_construct_query()
+                present_results = Sparql(query_to_identify, self.config_path).run_construct_query()
                 print(f"[AgnosticQuery:INFO] Rebuilding current relevant entities for the triple {solvable_triple}.")
                 pbar = tqdm(total=len(present_results))
                 for result in present_results:
@@ -102,6 +115,7 @@ class AgnosticQuery:
             else:
                 self._rebuild_relevant_entity(triple[0])
                 self._rebuild_relevant_entity(triple[2])
+            triples_checked.add(triple)
         self._align_snapshots()
         # Then, the graphs of the entities obtained from the hooks are reconstructed
         self._solve_variables()
@@ -200,8 +214,12 @@ class AgnosticQuery:
                     solvable_triple = [el.n3() for el in triple]
                     query_to_identify = f"""
                         CONSTRUCT {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
-                        WHERE {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}}}
+                        WHERE {{{solvable_triple[0]} {solvable_triple[1]} {solvable_triple[2]}.
                     """
+                    filter_by_types = (" UNION ".join(f"{{{solvable_triple[0]} a <{type_of_entity}>.}}" 
+                        for type_of_entity in self.entity_types))
+                    query_to_identify += filter_by_types
+                    query_to_identify += "}"
                     variable = variables[0]
                     variable_index = triple.index(variable)
                     if variable_index == 2:
@@ -238,29 +256,33 @@ class AgnosticQuery:
                             new_triples.add(triple)
             vars_to_explicit_by_time[se] = new_triples 
         self.vars_to_explicit_by_time = vars_to_explicit_by_time
-
-    def _find_entities_in_update_queries(self, triple:tuple):
+    
+    def _get_query_to_identify(self, triple:tuple) -> str:
         uris_in_triple = {el for el in triple if isinstance(el, URIRef)}
-        relevant_entities_found = set()
         query_to_identify = f"""
             SELECT DISTINCT ?updateQuery 
             WHERE {{
                 ?snapshot <{ProvEntity.iri_has_update_query}> ?updateQuery.
         """ 
+        filter_by_types = (" UNION ".join(f"{{?snapshot <{ProvEntity.iri_specialization_of}>/a <{type_of_entity}>.}}" 
+            for type_of_entity in self.entity_types))
+        query_to_identify += filter_by_types
         for uri in uris_in_triple:
             if triple.index(uri) == 0 or triple.index(uri) == 2:
                 self._rebuild_relevant_entity(uri)
             query_to_identify += f"FILTER CONTAINS (?updateQuery, '<{uri}>')"
-        filter_by_types = (" UNION ".join(f"?snapshot <{ProvEntity.iri_specialization_of}>/a <{type_of_entity}>" 
-            for type_of_entity in self.type_of_entities))
-        query_to_identify += filter_by_types
         query_to_identify += "}"
-        print(query_to_identify)
-        results = Sparql(query_to_identify).run_select_query()
-        pbar = tqdm(total=len(results))
-        print(f"[AgnosticQuery:INFO] Searching for relevant entities in relevant update queries.")
-        for result in results:
-            try:
+        return query_to_identify
+
+    def _find_entities_in_update_queries(self, triple:tuple):
+        uris_in_triple = {el for el in triple if isinstance(el, URIRef)}
+        relevant_entities_found = set()
+        query_to_identify = self._get_query_to_identify(triple)
+        results = Sparql(query_to_identify, self.config_path).run_select_query()
+        if results:
+            pbar = tqdm(total=len(results))
+            print(f"[AgnosticQuery:INFO] Searching for relevant entities in relevant update queries.")
+            for result in results:
                 update = parseUpdate(result[0])
                 for request in update["request"]:
                     for quadsNotTriples in request["quads"]["quadsNotTriples"]:
@@ -269,16 +291,16 @@ class AgnosticQuery:
                             relevant_entities = set(triple).difference(uris_in_triple) if len(uris_in_triple.intersection(triple)) == len(uris_in_triple) else None
                             if relevant_entities is not None:
                                 relevant_entities_found.update(relevant_entities)
-                        pbar.update(1)
-            except RecursionError:
                 pbar.update(1)
-        pbar.close()
-        print(f"[AgnosticQuery:INFO] Rebuilding relevant entities' history.")
-        pbar = tqdm(total=len(relevant_entities_found))
-        for relevant_entity_found in relevant_entities_found:
-            self._rebuild_relevant_entity(relevant_entity_found)
-            pbar.update(1)
-        pbar.close()
+            pbar.close()
+        new_entities_found = relevant_entities_found.difference(self.reconstructed_entities)
+        if new_entities_found:
+            print(f"[AgnosticQuery:INFO] Rebuilding relevant entities' history.")
+            pbar = tqdm(total=len(new_entities_found))
+            for new_entity_found in new_entities_found:
+                self._rebuild_relevant_entity(new_entity_found)
+                pbar.update(1)
+            pbar.close()
         
     def run_agnostic_query(self) -> Dict[str, Set[Tuple]]:
         """
@@ -298,7 +320,40 @@ class AgnosticQuery:
             agnostic_result[snapshot] = output
         return agnostic_result
 
-        
+class BlazegraphQuery(AgnosticQuery):
+    def __init__(self, query:str, entity_types=set(), config_path:str = CONFIG_PATH):
+        blazegraph_full_text_search:str = FileManager(config_path).import_json()["blazegraph_full_text_search"]
+        if blazegraph_full_text_search.lower() in {"true", "1", 1, "t", "y", "yes", "ok"}:
+            self.blazegraph_full_text_search = True
+        elif blazegraph_full_text_search.lower() in {"false", "0", 0, "n", "f", "no"}:
+            self.blazegraph_full_text_search = False
+        else:
+            raise ValueError("Enter a valid value for 'blazegraph_full_text_search' in the configuration file, for example 'yes' or 'no'.")
+        super(BlazegraphQuery, self).__init__(query, entity_types)
+
+    def _get_query_to_identify(self, triple:tuple) -> str:
+        uris_in_triple = {el for el in triple if isinstance(el, URIRef)}
+        query_to_identify = f"""
+            PREFIX bds: <http://www.bigdata.com/rdf/search#>
+            SELECT DISTINCT ?updateQuery 
+            WHERE {{
+                ?snapshot <{ProvEntity.iri_has_update_query}> ?updateQuery.
+        """ 
+        filter_by_types = (" UNION ".join(f"{{?snapshot <{ProvEntity.iri_specialization_of}>/a <{type_of_entity}>.}}" 
+            for type_of_entity in self.entity_types))
+        query_to_identify += filter_by_types
+        for uri in uris_in_triple:
+            if triple.index(uri) == 0 or triple.index(uri) == 2:
+                self._rebuild_relevant_entity(uri)
+            if self.blazegraph_full_text_search:
+                query_to_identify += f"?updateQuery bds:search '<{uri}>'."
+            else:
+                query_to_identify += f"FILTER CONTAINS (?updateQuery, '<{uri}>')"
+        query_to_identify += "}"
+        return query_to_identify
+
+
+
 
     
 

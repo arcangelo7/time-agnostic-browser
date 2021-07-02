@@ -57,8 +57,17 @@
                     <!-- End of Tab Content -->
                 </div>
             </div>
-            <div id="alert">
-            </div>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <span class="fas fa-exclamation-circle"></span>
+                            {{message}}
+                            <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+                        </div>   
+                    {% endfor %}              
+                {% endif %}
+            {% endwith %}
         </div>
     </section>
 </main>
