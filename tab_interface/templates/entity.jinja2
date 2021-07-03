@@ -63,7 +63,7 @@
                                 <div class="col middle-line">&nbsp;</div>
                                 <div class="col">&nbsp;</div>
                             </div>
-                            <span class="m-3">{{snapshot}}</span>
+                            <span class="m-3"><strong>Generated at time: </strong>{{snapshot}}</span>
                             <div class="d-flex h-50">
                                 <div class="col middle-line">&nbsp;</div>
                                 <div class="col">&nbsp;</div>
@@ -73,19 +73,14 @@
                         <div class="col-12 col-lg-12 col-xl-11 my-4">
                             <div class="card shadow border-gray-300 text-primary p-4">
                                 <div class="card-body">
+                                    <h5 class="mb-4">{{res}}</h5>
                                     {% if history[res][snapshot] %}
                                         <table class ="table table-responsive col-sm-11 mb-5">
-                                            <thead>
-                                                <tr>
-                                                    <th id="outgoingPredicate">Predicate</th>
-                                                    <th id="outgoingObject">Object</th>
-                                                </tr> 
-                                            </thead>  
                                             <tbody>
                                                 {% for triple in history[res][snapshot] %}
                                                     <tr>
-                                                        <td headers="outgoingPredicate">{{triple[1]}}</td>
-                                                        <td headers="outgoingObject" class="tripleObject">{{triple[2]}}</td>
+                                                        <td class="triplePredicate">{{triple[1]}}</td>
+                                                        <td class="tripleObject">{{triple[2]}}</td>
                                                     </tr>
                                                 {% endfor %}
                                             </tbody>     

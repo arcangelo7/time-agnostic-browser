@@ -97,3 +97,7 @@ td, #resName {
     display: flex;
     justify-content: center;
 }
+
+.tooltip.show {
+    opacity: 1;
+}
