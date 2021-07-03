@@ -67,7 +67,7 @@ a.entity {
     color: #0d6efd !important;
 }
 
-td, #resName {
+td, .resName {
     word-break: break-all;
 }
 

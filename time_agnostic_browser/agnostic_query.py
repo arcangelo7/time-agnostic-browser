@@ -123,7 +123,7 @@ class AgnosticQuery:
     def _rebuild_relevant_entity(self, entity:Union[URIRef, Literal]):
         if isinstance(entity, URIRef) and entity not in self.reconstructed_entities:
             agnostic_entity = AgnosticEntity(entity, False)
-            entity_history = agnostic_entity.get_history()
+            entity_history = agnostic_entity.get_history()[0]
             if entity_history[entity]:
                 self.relevant_entities_graphs.update(entity_history) 
             self.reconstructed_entities.add(entity)

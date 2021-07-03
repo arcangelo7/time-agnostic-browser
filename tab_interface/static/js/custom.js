@@ -9,42 +9,46 @@ function isURI(string) {
     return true
 }
 
-function transformEntitiesInLinks(){
+function showHumanReadableEntities(){
     config = $.get("/get_config", function(data){
         base_urls = data["base_urls"]
-        $(".tripleObject").each(function(){
+        $(".tripleObject, .resName").each(function(){
             tripleMemberElement = $(this)
             tripleMember = $(this).html()
             if (base_urls.length) {
                 $.each(base_urls, function(i, base_url){
                     if (tripleMember.includes(base_url)){
-                        $(tripleMemberElement).wrapInner(`<a href='' class='entity'></a>`)
+                        tripleMemberElement
+                            .html(tripleMember.replace(base_url, ""))
+                            .attr("title", tripleMember)
+                        if (tripleMemberElement.hasClass("tripleObject")){
+                            tripleMemberElement
+                                .addClass("tripleObjectRes")
+                                .wrapInner(`<a href='${tripleMember}' class='entity'></a>`)
+                        }  
                     }        
                 });
             } else {
-                if (isURI(tripleMember)) {
-                    $(this).wrapInner(`<a href='' class='entity'></a>`)
+                if (isURI(tripleMember) && tripleMemberElement.hasClass("tripleObject")) {
+                    $(tripleMemberElement)
+                        .addClass("tripleObjectRes")
+                        .wrapInner(`<a href='${tripleMember}' class='entity'></a>`)
                 }    
             }
         });
-    });
-}
-
-function showHumanReadablePredicate(){
-    $(".triplePredicate").each(function(){
-        original_uri = $(this).html()
-        slash = $(this).html().split("/")
-        no_slash = slash[slash.length - 1]
-        hashtag = no_slash.split("#")
-        no_hashtag = hashtag[hashtag.length - 1]
-        camelCase = no_hashtag.replace(/^[a-z]|[A-Z]/g, function(v, i) {
-            return i === 0 ? v.toUpperCase() : " " + v.toLowerCase();
-        });  
-        $(this)
-            // .attr("data-toggle", "tooltip")
-            // .attr("data-placement", "right")
-            .attr("title", original_uri)
-            .html(camelCase)
+        $(".triplePredicate, .tripleObject").not(".tripleObjectRes").each(function(){
+            original_uri = $(this).html()
+            slash = $(this).html().split("/")
+            no_slash = slash[slash.length - 1]
+            hashtag = no_slash.split("#")
+            no_hashtag = hashtag[hashtag.length - 1]
+            camelCase = no_hashtag.replace(/^[a-z]|[A-Z]/g, function(v, i) {
+                return i === 0 ? v.toUpperCase() : " " + v.toLowerCase();
+            });  
+            $(this)
+                .attr("title", original_uri)
+                .html(camelCase)
+        });    
     });
 }
 
@@ -65,13 +69,11 @@ $("#exploreSubmit").on("click", function () {
 // Click on entity
 $(document).on("click", "a.entity", function(e){
     e.preventDefault()
-    var res = $(this).html()
+    var res = $(this).attr("href")
     resolveEntity(res)
 });
 
 $(function() {
-    showHumanReadablePredicate();
-    transformEntitiesInLinks();
-    $('[data-toggle="tooltip"]').tooltip()
+    showHumanReadableEntities();
     $('.middle-line').first().remove();
 });

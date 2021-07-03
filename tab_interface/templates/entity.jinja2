@@ -43,7 +43,7 @@
     </nav>
     <section class="section">
         <div class="container">
-            <h1 class="mb-5" id="resName">{{res}}</h1>
+            <h1 class="mb-5 resName">{{res}}</h1>
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     {% for message in messages %}
@@ -73,7 +73,7 @@
                         <div class="col-12 col-lg-12 col-xl-11 my-4">
                             <div class="card shadow border-gray-300 text-primary p-4">
                                 <div class="card-body">
-                                    <h5 class="mb-4">{{res}}</h5>
+                                    <h5 class="mb-4 resName">{{res}}</h5>
                                     {% if history[res][snapshot] %}
                                         <table class ="table table-responsive col-sm-11 mb-5">
                                             <tbody>

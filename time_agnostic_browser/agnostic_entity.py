@@ -24,6 +24,7 @@ import copy
 import re
 from rdflib.plugins.sparql.processor import processUpdate
 from dateutil import parser
+from itertools import product
 
 from time_agnostic_browser.sparql import Sparql
 from time_agnostic_browser.prov_entity import ProvEntity
@@ -46,7 +47,7 @@ class AgnosticEntity:
         self.res = res
         self.related_entities_history = related_entities_history
 
-    def get_history(self) -> Dict[str, Dict[str, ConjunctiveGraph]]:
+    def get_history(self, include_prov_metadata=False) -> Dict[str, Dict[str, ConjunctiveGraph]]:
         """
         Given the URI of a resource, it reconstructs its entire history, 
         returning a dictionary according to the following model: ::
@@ -76,15 +77,15 @@ class AgnosticEntity:
             for entity in related_entities:
                 if ProvEntity.PROV not in entity[1]:
                     entities_to_query.add(str(entity[0]))
-            return get_entities_histories(entities_to_query)
-        entity_history = self._get_entity_current_state()
+            return get_entities_histories(entities_to_query, include_prov_metadata)
+        entity_history = self._get_entity_current_state(include_prov_metadata)
         entity_history = self._get_old_graphs(entity_history)
         return entity_history
 
     def get_state_at_time(
         self, 
         time: str, 
-        get_hooks: bool = False, 
+        include_prov_metadata: bool = False, 
         ) -> Tuple[ConjunctiveGraph, Dict[str, str], Dict[str, str]]:
         """
         Given a time, the function returns the resource's state at that time, the returned snapshot metadata
@@ -119,9 +120,9 @@ class AgnosticEntity:
 
         :param time: Any time value, not necessarily the exact value of a snapshot. The status of the resource will be returned to the most recent past snapshot compared to the specified time. The time can be specified using any existing standard.
         :type time: str.
-        :param get_hooks: If True, hooks are returned to the previous and subsequent snapshots. The default value is False.
-        :type get_hooks: bool.
-        :returns: tuple --   The method always returns a tuple of three elements: the first is the resource conjunctive graph at that time, the second is the snapshot metadata of which the state has been returned. If the get_hooks parameter is True, the third element of the tuple is the metadata on the other snapshots, otherwise an empty dictionary. The third dictionary is empty also if only one snapshot exists.
+        :param include_prov_metadata: If True, hooks are returned to the previous and subsequent snapshots. The default value is False.
+        :type include_prov_metadata: bool.
+        :returns: tuple --   The method always returns a tuple of three elements: the first is the resource conjunctive graph at that time, the second is the snapshot metadata of which the state has been returned. If the include_prov_metadata parameter is True, the third element of the tuple is the metadata on the other snapshots, otherwise an empty dictionary. The third dictionary is empty also if only one snapshot exists.
         """
         datetime_time = self._convert_to_datetime(time)
         query_snapshots = f"""
@@ -157,7 +158,7 @@ class AgnosticEntity:
             str(ProvEntity.iri_was_attributed_to): snapshot_to_return[2],
             str(ProvEntity.iri_had_primary_source): snapshot_to_return[4]
         }
-        if get_hooks:
+        if include_prov_metadata:
             results.remove(snapshot_to_return)
             other_snapshots = dict()
             for result_tuple in results:
@@ -168,8 +169,31 @@ class AgnosticEntity:
             }
             return entity_cg, entity_snapshot, other_snapshots
         return entity_cg, entity_snapshot, dict()
+    
+    def _include_prov_metadata(self, triples_generated_at_time:list, current_state:ConjunctiveGraph) -> dict:
+        prov_metadata = {
+            self.res: dict()
+        }
+        for triple in triples_generated_at_time:
+            time = self._convert_to_datetime(triple[2]).strftime("%Y-%m-%dT%H:%M:%S")
+            prov_metadata[self.res][str(triple[0])] = {
+                "http://www.w3.org/ns/prov#generatedAtTime": time,
+                "http://www.w3.org/ns/prov#wasAttributedTo": None,
+                "http://www.w3.org/ns/prov#hadPrimarySource": None
+            }
+        for entity, metadata in dict(prov_metadata).items():
+            for se, _ in metadata.items():
+                triples_was_attributed_to = current_state.triples(
+                    (URIRef(se), ProvEntity.iri_was_attributed_to, None))
+                triples_iri_had_primary_source = current_state.triples(
+                    (URIRef(se), ProvEntity.iri_had_primary_source, None))
+                for triple in triples_was_attributed_to:
+                    prov_metadata[entity][str(triple[0])][str(triple[1])] = str(triple[2])
+                for triple in triples_iri_had_primary_source:
+                    prov_metadata[entity][str(triple[0])][str(triple[1])] = str(triple[2])
+        return prov_metadata
 
-    def _get_entity_current_state(self) -> Dict[str, Dict[str, ConjunctiveGraph]]:
+    def _get_entity_current_state(self, include_prov_metadata:bool=False) -> list:
         """
         Given the URI of a resource, it outputs a dictionary populating only 
         the instant at time t, that is the present one, according to the following model:
@@ -181,16 +205,16 @@ class AgnosticEntity:
             }
         }        
         """
-        entity_current_state = {self.res: dict()}
+        entity_current_state = [{self.res: dict()}]
         current_state = ConjunctiveGraph()
         for quad in self._query_dataset().quads():
             current_state.add(quad)
-        for quad in self._query_provenance().quads():
+        for quad in self._query_provenance(include_prov_metadata).quads():
             current_state.add(quad)
         if len(current_state) == 0:
             return entity_current_state
-        triples_generated_at_time = current_state.triples(
-            (None, ProvEntity.iri_generated_at_time, None))
+        triples_generated_at_time = list(current_state.triples(
+            (None, ProvEntity.iri_generated_at_time, None)))
         most_recent_time = None
         for triple in triples_generated_at_time:
             snapshot_time = triple[2]
@@ -200,19 +224,20 @@ class AgnosticEntity:
                     most_recent_time = snapshot_time
             elif not most_recent_time:
                 most_recent_time = snapshot_time
-            entity_current_state[self.res][snapshot_time] = None
-        entity_current_state[self.res][most_recent_time] = current_state
+            entity_current_state[0][self.res][snapshot_time] = None
+        entity_current_state[0][self.res][most_recent_time] = current_state
+        if include_prov_metadata:
+            prov_metadata = self._include_prov_metadata(triples_generated_at_time, current_state)
+            entity_current_state.append(prov_metadata)
         return entity_current_state
 
-    def _get_old_graphs(
-        self, entity_current_state: Dict[str, Dict[str, ConjunctiveGraph]]
-    ) -> Dict[str, Dict[str, ConjunctiveGraph]]:
+    def _get_old_graphs(self, entity_current_state:List[Dict[str, Dict[str, ConjunctiveGraph]]]) -> list:
         """
         Given as input the output of _get_entity_current_state, it populates the graphs 
         relating to the past snapshots of the resource.        
         """
         ordered_data: List[Tuple[str, ConjunctiveGraph]] = sorted(
-            entity_current_state[self.res].items(),
+            entity_current_state[0][self.res].items(),
             key=lambda x: self._convert_to_datetime(x[0]),
             reverse=True
         )
@@ -220,7 +245,7 @@ class AgnosticEntity:
             if index > 0:
                 next_snapshot = ordered_data[index-1][0]
                 previous_graph: ConjunctiveGraph = copy.deepcopy(
-                    entity_current_state[self.res][next_snapshot])
+                    entity_current_state[0][self.res][next_snapshot])
                 snapshot_uri = list(
                     previous_graph.subjects(object=next_snapshot))[0]
                 snapshot_update_query: str = previous_graph.value(
@@ -229,19 +254,21 @@ class AgnosticEntity:
                     object=None)
                 # TODO: To be improved
                 if snapshot_update_query is None:
-                    entity_current_state[self.res][date_graph[0]
+                    entity_current_state[0][self.res][date_graph[0]
                                                    ] = previous_graph
                 else:
                     self._manage_update_queries(
                         previous_graph, snapshot_update_query)
-                    entity_current_state[self.res][date_graph[0]
+                    entity_current_state[0][self.res][date_graph[0]
                                                    ] = previous_graph
-        for time in list(entity_current_state[self.res]):
-            cg_no_pro = entity_current_state[self.res].pop(time)
+        for time in list(entity_current_state[0][self.res]):
+            cg_no_pro = entity_current_state[0][self.res].pop(time)
             cg_no_pro.remove((None, ProvEntity.iri_generated_at_time, None))
+            cg_no_pro.remove((None, ProvEntity.iri_was_attributed_to, None))
+            cg_no_pro.remove((None, ProvEntity.iri_was_derived_from, None))
             cg_no_pro.remove((None, ProvEntity.iri_has_update_query, None))
-            time_no_tz = parser.parse(time).replace(tzinfo=None)
-            entity_current_state[self.res][time_no_tz.strftime("%Y-%m-%dT%H:%M:%S")] = cg_no_pro
+            time_no_tz = self._convert_to_datetime(time)
+            entity_current_state[0][self.res][time_no_tz.strftime("%Y-%m-%dT%H:%M:%S")] = cg_no_pro
         return entity_current_state
 
     @classmethod
@@ -310,20 +337,41 @@ class AgnosticEntity:
             """
         return Sparql(query_dataset).run_construct_query()
 
-    def _query_provenance(self) -> ConjunctiveGraph:
-        query_provenance = f"""
-            CONSTRUCT {{
-                ?snapshot <{ProvEntity.iri_generated_at_time}> ?t;      
-                        <{ProvEntity.iri_has_update_query}> ?updateQuery.
-            }} 
-            WHERE {{
-                ?snapshot <{ProvEntity.iri_specialization_of}> <{self.res}>;
-                        <{ProvEntity.iri_generated_at_time}> ?t.
-            OPTIONAL {{
-                    ?snapshot <{ProvEntity.iri_has_update_query}> ?updateQuery.
-                }}   
-            }}
-        """
+    def _query_provenance(self, include_prov_metadata:bool=False) -> ConjunctiveGraph:
+        if include_prov_metadata:
+            query_provenance = f"""
+                CONSTRUCT {{
+                    ?snapshot <{ProvEntity.iri_generated_at_time}> ?t; 
+                              <{ProvEntity.iri_was_attributed_to}> ?responsibleAgent;
+                              <{ProvEntity.iri_had_primary_source}> ?source;
+                              <{ProvEntity.iri_has_update_query}> ?updateQuery.
+                }} 
+                WHERE {{
+                    ?snapshot <{ProvEntity.iri_specialization_of}> <{self.res}>;
+                              <{ProvEntity.iri_was_attributed_to}> ?responsibleAgent;
+                              <{ProvEntity.iri_generated_at_time}> ?t.
+                OPTIONAL {{
+                        ?snapshot <{ProvEntity.iri_had_primary_source}> ?source.
+                    }}   
+                OPTIONAL {{
+                        ?snapshot <{ProvEntity.iri_has_update_query}> ?updateQuery.
+                    }}  
+                }}
+            """
+        else:
+            query_provenance = f"""
+                CONSTRUCT {{
+                    ?snapshot <{ProvEntity.iri_generated_at_time}> ?t;      
+                              <{ProvEntity.iri_has_update_query}> ?updateQuery.
+                }} 
+                WHERE {{
+                    ?snapshot <{ProvEntity.iri_specialization_of}> <{self.res}>;
+                              <{ProvEntity.iri_generated_at_time}> ?t.
+                OPTIONAL {{
+                        ?snapshot <{ProvEntity.iri_has_update_query}> ?updateQuery.
+                    }}   
+                }}
+            """
         return Sparql(query_provenance).run_construct_query()
 
     @classmethod
@@ -334,10 +382,10 @@ class AgnosticEntity:
         #         return datetime.strptime(time_string, pattern)
         #     except:
         #         pass
-        return parser.parse(time_string)
+        return parser.parse(time_string).replace(tzinfo=None)
 
 
-def get_entities_histories(res_set: Set[str], related_entities_history=False) -> Dict[str, Dict[str, ConjunctiveGraph]]:
+def get_entities_histories(res_set: Set[str], related_entities_history=False, include_prov_metadata:bool=False) -> Dict[str, Dict[str, ConjunctiveGraph]]:
     """
     Given a set of entities URIs it returns the history of those entities. 
     You can also specify via the related_entities_history parameter
@@ -371,5 +419,5 @@ def get_entities_histories(res_set: Set[str], related_entities_history=False) ->
     entities_histories = dict()
     for res in res_set:
         agnosticEntity = AgnosticEntity(res, related_entities_history)
-        entities_histories.update(agnosticEntity.get_history())
+        entities_histories.update(agnosticEntity.get_history(include_prov_metadata=include_prov_metadata)[0])
     return entities_histories
