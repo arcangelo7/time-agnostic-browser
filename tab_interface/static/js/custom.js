@@ -76,6 +76,56 @@ $("#exploreSubmit").on("click", function () {
     resolveEntity(res)
 });
 
+// Click on querySubmit
+$("#querySubmit").on("click", function () {
+    $("#querySubmit").html(`
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        <span class="ml-1">Loading...</span>
+    `);
+    var query = $("textarea#sparqlEndpoint").val()
+    $.post("/query", {"query": query}, function(data){
+        $(".sparqlResults .row").empty();
+        $.each(data, function(snapshot, output){
+            console.log(output)
+            $(".sparqlResults .row").append(`
+                <div class="col-auto flex-column d-sm-flex">
+                    <div class="d-flex h-50">
+                        <div class="col middle-line">&nbsp;</div>
+                        <div class="col">&nbsp;</div>
+                    </div>
+                    <span class="m-3"><strong>Results at time</strong>: ${snapshot}</span>
+                    <div class="d-flex h-50">
+                        <div class="col middle-line">&nbsp;</div>
+                        <div class="col">&nbsp;</div>
+                    </div>
+                </div>
+                <!-- Timeline item 1 content-->
+                <div class="col-12 col-lg-12 col-xl-11 my-4">
+                    <div class="card shadow border-gray-300 text-primary p-4">
+                        <div class="card-body">
+                            <h5 class="mb-4 resName"></h5>
+                            <table class ="table table-responsive col-sm-11 mb-5">
+                                <tbody>
+                                    <tr>
+                                        <td>${output}</td>
+                                    </tr>
+                                </tbody>     
+                            </table>  
+                        </div>
+                    </div>
+                </div>
+            `)
+        });
+        $('.middle-line').first().remove();  
+        $("#querySubmit")
+            .html(`
+                <span class="mr-1"><span class="fas fa-search"></span></span>
+                Submit the query
+            `)
+            .blur();
+    });
+});
+
 // Click on entity
 $(document).on("click", "a.entity", function(e){
     e.preventDefault()

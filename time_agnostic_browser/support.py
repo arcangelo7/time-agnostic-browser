@@ -87,7 +87,7 @@ def _to_nt_sorted_list(cg:ConjunctiveGraph) -> list:
     sorted_nt_list = sorted([triple.replace("b\'", "").strip() for triple in nt_list if triple != r"b'\n'" and triple != r"\n'"])
     return sorted_nt_list
 
-def _to_dict_of_nt_sorted_lists(dictionary:Dict[str, Dict[str, ConjunctiveGraph]]) -> Dict[str, Dict[str, List]]:
+def _to_dict_of_nt_sorted_lists(dictionary:Dict[str, Dict[str, ConjunctiveGraph]]) -> Dict[str, Dict[str, List[str]]]:
     dict_of_nt_sorted_lists = dict()
     for key, value in dictionary.items():
         if isinstance(value, ConjunctiveGraph):
