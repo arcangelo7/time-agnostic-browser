@@ -15,20 +15,17 @@
 # SOFTWARE.
 
 from pprint import pprint
-from typing import List, Optional, Tuple, Dict, Set, Union
+from typing import List, Tuple, Dict, Set
 from datetime import datetime
-import rdflib
 from rdflib.graph import ConjunctiveGraph
-from rdflib.term import URIRef, Literal
+from rdflib.term import URIRef
 import copy
 import re
 from rdflib.plugins.sparql.processor import processUpdate
 from dateutil import parser
-from itertools import product
 
 from time_agnostic_browser.sparql import Sparql
 from time_agnostic_browser.prov_entity import ProvEntity
-from time_agnostic_browser.support import _to_dict_of_nt_sorted_lists, _to_nt_sorted_list
 
 
 class AgnosticEntity:
@@ -47,7 +44,7 @@ class AgnosticEntity:
         self.res = res
         self.related_entities_history = related_entities_history
 
-    def get_history(self, include_prov_metadata=False) -> Dict[str, Dict[str, ConjunctiveGraph]]:
+    def get_history(self, include_prov_metadata:bool=False) -> Tuple[Dict[str, Dict[str, ConjunctiveGraph]], Dict]:
         """
         Given the URI of a resource, it reconstructs its entire history, 
         returning a dictionary according to the following model: ::
@@ -80,7 +77,7 @@ class AgnosticEntity:
             return get_entities_histories(entities_to_query, include_prov_metadata)
         entity_history = self._get_entity_current_state(include_prov_metadata)
         entity_history = self._get_old_graphs(entity_history)
-        return entity_history
+        return tuple(entity_history)
 
     def get_state_at_time(
         self, 
@@ -385,7 +382,7 @@ class AgnosticEntity:
         return parser.parse(time_string).replace(tzinfo=None)
 
 
-def get_entities_histories(res_set: Set[str], related_entities_history=False, include_prov_metadata:bool=False) -> Dict[str, Dict[str, ConjunctiveGraph]]:
+def get_entities_histories(res_set: Set[str], include_prov_metadata:bool=False) -> Tuple[Dict[str, Dict[str, ConjunctiveGraph]], Dict]:
     """
     Given a set of entities URIs it returns the history of those entities. 
     You can also specify via the related_entities_history parameter
@@ -416,8 +413,14 @@ def get_entities_histories(res_set: Set[str], related_entities_history=False, in
     :type related_entities_history: bool.
     :returns:  Dict[str, Dict[str, ConjunctiveGraph]] -- A dictionary containing the graphs related to each considered entities in each of the existing snapshots of these entities.
     """
-    entities_histories = dict()
+    entities_histories = [dict(), dict()]
     for res in res_set:
-        agnosticEntity = AgnosticEntity(res, related_entities_history)
-        entities_histories.update(agnosticEntity.get_history(include_prov_metadata=include_prov_metadata)[0])
-    return entities_histories
+        agnosticEntity = AgnosticEntity(res, related_entities_history=False)
+        history_and_metadata = agnosticEntity.get_history(include_prov_metadata=include_prov_metadata)
+        if history_and_metadata:
+            history = history_and_metadata[0]
+            entities_histories[0].update(history)
+        if include_prov_metadata:
+            metadata = history_and_metadata[1]
+            entities_histories[1].update(metadata)
+    return tuple(entities_histories)

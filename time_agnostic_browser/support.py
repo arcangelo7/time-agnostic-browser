@@ -98,30 +98,25 @@ def _to_dict_of_nt_sorted_lists(dictionary:Dict[str, Dict[str, ConjunctiveGraph]
                 dict_of_nt_sorted_lists[key][snapshot] = _to_nt_sorted_list(cg)
     return dict_of_nt_sorted_lists
 
+def _to_conjunctive_graph(nt_list:List[str]) -> ConjunctiveGraph:
+    cg = ConjunctiveGraph()
+    for triple in nt_list:
+        cg.parse(data=triple + ".", format="nt")
+    return cg
+
 def _to_dict_of_conjunctive_graphs(dictionary:Dict[str, Dict[str, List]]) -> Dict[str, Dict[str, ConjunctiveGraph]]:
     dict_of_conjunctive_graphs = dict()
     for key, value in dictionary.items():
         if isinstance(value, list):
-            cg = ConjunctiveGraph()
-            for triple in value:
-                to_add = [URIRef(el.replace("<", "").replace(">", "")) if el.startswith("<") else Literal(el.replace('"', '')) for el in triple.split()]
-                if to_add:
-                    cg.add(to_add)
+            cg = _to_conjunctive_graph(value)
             dict_of_conjunctive_graphs.setdefault(key, dict())
             dict_of_conjunctive_graphs[key] = cg
         else:
             for snapshot, triples in value.items():
-                cg = ConjunctiveGraph()
-                for triple in triples:
-                    to_add = [URIRef(el.replace("<", "").replace(">", "")) if el.startswith("<") else Literal(el.replace('"', '')) for el in triple.split()]
-                    if to_add:
-                        cg.add(to_add)
+                cg = _to_conjunctive_graph(triples)
                 dict_of_conjunctive_graphs.setdefault(key, dict())
                 dict_of_conjunctive_graphs[key][snapshot] = cg
     return dict_of_conjunctive_graphs
-
-
-
 
 
 

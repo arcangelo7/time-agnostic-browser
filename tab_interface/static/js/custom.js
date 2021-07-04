@@ -52,6 +52,16 @@ function showHumanReadableEntities(){
     });
 }
 
+function showProvMetadataAsLink(){
+    $(".responsibleAgent, .primarySource").each(function(){
+        provMetadata = $(this) 
+        provMetadataText = provMetadata.html()
+        if (isURI(provMetadata.html())){
+            provMetadata.wrapInner(`<a href="${provMetadataText}" class="provMetadataUrl" target="_blank"></a>`)
+        }
+    });
+}
+
 function resolveEntity(res){
     window.location.href = `/entity/${res}` 
 }
@@ -74,6 +84,9 @@ $(document).on("click", "a.entity", function(e){
 });
 
 $(function() {
-    showHumanReadableEntities();
-    $('.middle-line').first().remove();
+    if(location.pathname != "/"){
+        showHumanReadableEntities();
+        showProvMetadataAsLink();
+        $('.middle-line').first().remove();    
+    }
 });

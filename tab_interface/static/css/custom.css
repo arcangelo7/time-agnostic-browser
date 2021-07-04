@@ -63,7 +63,7 @@ ul.ui-autocomplete {
     float: right;
 }
 
-a.entity {
+a.entity, a.provMetadataUrl, a.provMetadataUrl {
     color: #0d6efd !important;
 }
 

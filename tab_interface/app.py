@@ -1,3 +1,4 @@
+from typing import Dict
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
 from collections import OrderedDict
 from dateutil import parser
@@ -15,6 +16,7 @@ CONFIG_PATH = "./tab_interface/config.json"
 
 app = Flask(__name__)
 app.secret_key = b'\x94R\x06?\xa4!+\xaa\xae\xb2\xf3Z\xb4\xb7\xab\xf8'
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 config = FileManager(CONFIG_PATH).import_json()
 
 def get_human_readable_date(date:str) -> str:
@@ -44,6 +46,20 @@ def get_human_readable_history(history:dict) -> dict:
             human_readable_history[uri][human_readable_snapshot] = list_of_lists
     return human_readable_history
 
+def get_prov_metadata_by_time(prov_metadata:Dict[str, Dict]) -> Dict[str, Dict]:
+    prov_metadata_by_time:Dict[str, Dict] = dict()
+    for entity, snapshots in prov_metadata.items():
+        for _, metadata in snapshots.items():
+            prov_metadata_by_time.setdefault(entity, dict())
+            time = get_human_readable_date(metadata["http://www.w3.org/ns/prov#generatedAtTime"])
+            responsible_agent = metadata["http://www.w3.org/ns/prov#wasAttributedTo"]
+            source = metadata["http://www.w3.org/ns/prov#hadPrimarySource"]
+            prov_metadata_by_time[entity].setdefault(time, dict())
+            prov_metadata_by_time[entity][time]["http://www.w3.org/ns/prov#generatedAtTime"] = time
+            prov_metadata_by_time[entity][time]["http://www.w3.org/ns/prov#wasAttributedTo"] = responsible_agent
+            prov_metadata_by_time[entity][time]["http://www.w3.org/ns/prov#hadPrimarySource"] = source
+    return prov_metadata_by_time
+
 @app.route("/")
 def home():
     return render_template("home.jinja2")
@@ -52,20 +68,21 @@ def home():
 def entity(res):
     agnostic_entity = AgnosticEntity(res=res, related_entities_history=False)
     try:
-        history = agnostic_entity.get_history()
+        history = agnostic_entity.get_history(include_prov_metadata=True)
     except urllib.error.URLError:
         flash("There are connection problems with the database.")
         return redirect(url_for("home"))
-    human_readable_history = get_human_readable_history(history)
+    human_readable_history = get_human_readable_history(history[0])
     if human_readable_history:
-        return render_template("entity.jinja2", res=res, history=human_readable_history)
+        prov_metadata = get_prov_metadata_by_time(history[1])
+        return render_template("entity.jinja2", res=res, history=human_readable_history, prov_metadata=prov_metadata)
     else:
         flash("I do not have information about that entity in my data.")
         return redirect(request.referrer)
 
 @app.route("/get_config")
 def get_config():
-    return config
+    return jsonify(config)
 
 if __name__ == "__main__":
     app.run(debug=True)
