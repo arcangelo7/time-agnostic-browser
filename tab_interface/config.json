@@ -1,3 +1,28 @@
 {
-    "base_urls": ["https://github.com/arcangelo7/time_agnostic/"]
+    "base_urls": ["https://github.com/arcangelo7/time_agnostic/"],
+    "rules_on_properties_order": {
+        "http://purl.org/spar/datacite/Identifier": {
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": 0,
+            "http://purl.org/spar/datacite/usesIdentifierScheme": 1
+        },
+        "http://purl.org/spar/pro/RoleInTime": {
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": 0,
+            "http://purl.org/spar/pro/withRole": 1    
+        },
+        "http://purl.org/spar/biro/BibliographicReference": {
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": 0
+        },
+        "http://purl.org/spar/fabio/Expression": {
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": 0
+        },
+        "http://purl.org/spar/cito/Citation": {
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": 0
+        },
+        "http://purl.org/spar/fabio/Manifestation": {
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": 0
+        },
+        "http://xmlns.com/foaf/0.1/Agent": {
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type": 0
+        }
+    }
 }

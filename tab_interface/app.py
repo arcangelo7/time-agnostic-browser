@@ -18,10 +18,18 @@ app = Flask(__name__)
 app.secret_key = b'\x94R\x06?\xa4!+\xaa\xae\xb2\xf3Z\xb4\xb7\xab\xf8'
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 config = FileManager(CONFIG_PATH).import_json()
+rules:dict = config["rules_on_properties_order"]
 
 def get_human_readable_date(date:str) -> str:
     datetime_obj = parser.parse(date).replace(tzinfo=None)
     return datetime_obj.strftime("%d %B %Y, %H:%M:%S")
+
+def get_type_of_entity(snapshots):
+    for _, triples in snapshots.items():
+        for triple in triples:
+            if "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" in triple:
+                type_of_entity = triple.split()[-1].replace("<", "").replace(">", "")
+                return type_of_entity
 
 def get_human_readable_history(history:dict) -> dict:
     history = _to_dict_of_nt_sorted_lists(history)
@@ -32,6 +40,7 @@ def get_human_readable_history(history:dict) -> dict:
             key=lambda x: parser.parse(x[0]),
             reverse=True
         )
+        type_of_entity = get_type_of_entity(snapshots)
         for snapshot, triples in sorted_snapshots:
             list_of_lists = list()
             for triple in triples:
@@ -41,9 +50,10 @@ def get_human_readable_history(history:dict) -> dict:
                 p = s_p[1]
                 o = literal[1].replace('"', '') if len(literal) > 1 else s_p[2]
                 list_of_lists.append([s, p, o])
+            sorted_list_of_lists = sorted(list_of_lists, key=lambda triple: (rules[type_of_entity].get(triple[1], 100)))
             human_readable_snapshot = get_human_readable_date(snapshot)
             human_readable_history.setdefault(uri, dict())
-            human_readable_history[uri][human_readable_snapshot] = list_of_lists
+            human_readable_history[uri][human_readable_snapshot] = sorted_list_of_lists
     return human_readable_history
 
 def get_prov_metadata_by_time(prov_metadata:Dict[str, Dict]) -> Dict[str, Dict]:
