@@ -45,12 +45,59 @@
                                 </button>
                             </div>
                             <div class="tab-pane fade" id="tabs-icons-text-2" role="tabpanel" aria-labelledby="tabs-icons-text-2-tab">
-                                <label for="sparqlEndpoint">Input a SPARQL query</label>
-                                <textarea class="form-control" id="sparqlEndpoint" rows="7"></textarea>
-                                <button id="sparqlQuerySubmit" class="btn btn-outline-primary m-5">
-                                    <span class="mr-1"><span class="fas fa-search"></span></span>
-                                    Submit the query
-                                </button>
+                                <div id="sparqlResults">
+                                    <label for="sparqlEndpoint">Input a SPARQL query</label>
+                                    <textarea class="form-control mb-1" id="sparqlEndpoint" rows="12">
+    PREFIX literal: &lt;http://www.essepuntato.it/2010/06/literalreification/&gt;
+    PREFIX datacite: &lt;http://purl.org/spar/datacite/&gt;
+    PREFIX pro: &lt;http://purl.org/spar/pro/&gt;
+    PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+    SELECT DISTINCT ?o ?id ?value
+    WHERE {
+        &lt;https://github.com/arcangelo7/time_agnostic/ar/15519&gt; pro:isHeldBy ?o.
+        OPTIONAL {&lt;https://github.com/arcangelo7/time_agnostic/ar/15519&gt; rdf:type pro:RoleInTime.}
+        ?o datacite:hasIdentifier ?id.
+        OPTIONAL {?id literal:hasLiteralValue ?value.}
+    }
+                                    </textarea>
+                                    <button id="querySubmit" class="btn btn-outline-primary m-5" @click="submitQuery">
+                                        <span class="mr-1"><span class="fas fa-search"></span></span>
+                                        Submit the query
+                                    </button>
+                                        <div class="timeline timeline-five mt-6">
+                                            <div class="row" v-for="snapshot in response">
+                                                <template v-for="(results, time) in snapshot">
+                                                    <div class="col-auto flex-column d-sm-flex">
+                                                        <div class="d-flex h-50">
+                                                            <div class="col middle-line">&nbsp;</div>
+                                                            <div class="col">&nbsp;</div>
+                                                        </div>
+                                                        <span class="m-3"><strong>Results at time</strong>: <% time %></span>
+                                                        <div class="d-flex h-50">
+                                                            <div class="col middle-line">&nbsp;</div>
+                                                            <div class="col">&nbsp;</div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Timeline item 1 content-->
+                                                    <div class="col-12 col-lg-12 col-xl-11 my-4 timeline-item">
+                                                        <div class="card shadow border-gray-300 text-primary p-4">
+                                                            <div class="card-body">
+                                                                <v-app>
+                                                                    <v-data-table 
+                                                                                :items="results"
+                                                                                :headers="headers"
+                                                                                :hide-default-footer="true"
+                                                                                >
+                                                                    </v-data-table>
+                                                                </v-app>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    
+                                </div>    
                             </div>
                         </div>
                     </div>
@@ -71,4 +118,47 @@
         </div>
     </section>
 </main>
+{# {% block javascript %}
+<script id="queryResultsTemplate" type="text/x-jsrender">
+    <%props%>
+    <div class="col-auto flex-column d-sm-flex">
+        <div class="d-flex h-50">
+            <div class="col middle-line">&nbsp;</div>
+            <div class="col">&nbsp;</div>
+        </div>
+        <span class="m-3"><strong>Results at time</strong>: <%:key%></span>
+        <div class="d-flex h-50">
+            <div class="col middle-line">&nbsp;</div>
+            <div class="col">&nbsp;</div>
+        </div>
+    </div>
+    <!-- Timeline item 1 content-->
+    <div class="col-12 col-lg-12 col-xl-11 my-4 timeline-item">
+        <div class="card shadow border-gray-300 text-primary p-4">
+            <div class="card-body">
+                <h5 class="mb-4 resName"></h5>
+                <table class="table table-responsive col-12 col-lg-12 col-xl-11 mb-5">
+                    <thead><tr>
+                        <%for prop%>
+                            <%props%>
+                                <th><%:key%></th>
+                            <%/props%>
+                        <%/for%>
+                    </tr></thead>
+                    <tbody>
+                        <%for prop%> 
+                            <%props%>
+                                <%for prop%>
+                                    <tr><td><%:#index%></td></tr>
+                                <%/for%>                                
+                            <%/props%>                          
+                        <%/for%>
+                    </tbody>
+                </table>  
+            </div>
+        </div>
+    </div>
+    <%/props%>
+</script>
+{% endblock %} #}
 {% endblock %}

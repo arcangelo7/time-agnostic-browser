@@ -58,17 +58,25 @@ ul.ui-autocomplete {
     z-index: 1100;
 }
 
-#sparqlQuerySubmit, 
+#querySubmit, 
 #exploreSubmit {
     float: right;
 }
 
-a.entity, a.provMetadataUrl, a.provMetadataUrl {
+a.entity, a.provMetadataUrl, a.provMetadataUrl, a.identifier {
     color: #0d6efd !important;
 }
 
+table {
+    table-layout: fixed;
+}
+
+.sparqlResults .timeline-item {
+    flex: 1 0 auto;
+}
+
 td, .resName {
-    word-break: break-all;
+    word-wrap: break-word;
 }
 
 .middle-line {
@@ -101,3 +109,5 @@ td, .resName {
 .tooltip.show {
     opacity: 1;
 }
+
+[v-cloak] { display: none }

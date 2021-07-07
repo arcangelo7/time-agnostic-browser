@@ -65,11 +65,11 @@
                             </div>
                             {% for key, value in prov_metadata[res][snapshot].items() %}
                                 {% if key == "http://www.w3.org/ns/prov#generatedAtTime" and value %}
-                                    <span class="m-3"><strong>Snapshot generated at time: </strong>{{value}}</span>
+                                    <span class="m-3"><strong>Snapshot generated at time</strong>: {{value}}</span>
                                 {% elif key == "http://www.w3.org/ns/prov#wasAttributedTo" and value %}
-                                    <span class="m-3"><strong>Snapshot attributed to: </strong><span class="responsibleAgent">{{value}}</span></span>
+                                    <span class="m-3"><strong>Snapshot attributed to</strong>: <span class="responsibleAgent">{{value}}</span></span>
                                 {% elif key == "http://www.w3.org/ns/prov#hadPrimarySource" and value %}
-                                    <span class="m-3"><strong>Snapshot primary source: </strong><span class="primarySource">{{value}}</span></span>
+                                    <span class="m-3"><strong>Snapshot primary source</strong>: <span class="primarySource">{{value}}</span></span>
                                 {% endif %}
                             {% endfor %}
                             <div class="d-flex h-50">
@@ -94,7 +94,7 @@
                                             </tbody>     
                                         </table>  
                                     {% else %}
-                                        <h5>The entity has been deleted.</h5>
+                                        <h6>The entity has been deleted.</h6>
                                     {% endif %}
                                 </div>
                             </div>

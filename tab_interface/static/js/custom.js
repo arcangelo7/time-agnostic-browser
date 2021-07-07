@@ -1,3 +1,5 @@
+acronymns = ["doi", "orcid"]
+orcid = /orcid\.org\/\d{4}\-\d{4}\-\d{4}\-\d{4}/
 
 function isURI(string) {
     let url;
@@ -9,10 +11,22 @@ function isURI(string) {
     return true
 }
 
+function isAnIdentifier(str, schema){
+    return schema.exec(str)
+}
+
+function unicodeToChar(text) {
+    return text.replace(/\\\\u[\dA-F]{4}/gi, 
+        function (match) {
+            return String.fromCharCode(parseInt(match.replace(/\\\\u/g, ''), 16));
+        });
+ }
+ 
+
 function showHumanReadableEntities(){
     config = $.get("/get_config", function(data){
         base_urls = data["base_urls"]
-        $(".tripleObject, .resName").each(function(){
+        $(".tripleObject, .resName, #sparqlResults td").each(function(){
             tripleMemberElement = $(this)
             tripleMember = $(this).html()
             if (base_urls.length) {
@@ -21,9 +35,9 @@ function showHumanReadableEntities(){
                         tripleMemberElement
                             .html(tripleMember.replace(base_url, ""))
                             .attr("title", tripleMember)
-                        if (tripleMemberElement.hasClass("tripleObject")){
+                        if (!tripleMemberElement.hasClass("resName")){
                             tripleMemberElement
-                                .addClass("tripleObjectRes")
+                                .addClass("tripleRes")
                                 .wrapInner(`<a href='${tripleMember}' class='entity'></a>`)
                         }  
                     }        
@@ -31,23 +45,34 @@ function showHumanReadableEntities(){
             } else {
                 if (isURI(tripleMember) && tripleMemberElement.hasClass("tripleObject")) {
                     $(tripleMemberElement)
-                        .addClass("tripleObjectRes")
+                        .addClass("tripleRes")
                         .wrapInner(`<a href='${tripleMember}' class='entity'></a>`)
                 }    
             }
         });
-        $(".triplePredicate, .tripleObject").not(".tripleObjectRes").each(function(){
-            original_uri = $(this).html()
-            slash = $(this).html().split("/")
-            no_slash = slash[slash.length - 1]
-            hashtag = no_slash.split("#")
-            no_hashtag = hashtag[hashtag.length - 1]
-            camelCase = no_hashtag.replace(/^[a-z]|[A-Z]/g, function(v, i) {
-                return i === 0 ? v.toUpperCase() : " " + v.toLowerCase();
-            });  
-            $(this)
-                .attr("title", original_uri)
-                .html(camelCase)
+        $(".triplePredicate, .tripleObject, #sparqlResults td").not(".tripleRes").each(function(){
+            original_text = $(this).html()
+            if (isAnIdentifier(original_text, orcid)){
+                $(this).wrapInner(`<a href='${original_text}' class="identifier" target="_blank"></a>`)
+            }
+            else if (isURI(original_text)){
+                slash = $(this).html().split("/")
+                no_slash = slash[slash.length - 1]
+                hashtag = no_slash.split("#")
+                no_hashtag = hashtag[hashtag.length - 1]
+                camelCase = no_hashtag.replace(/^[a-z]|[A-Z]/g, function(v, i) {
+                    return i === 0 ? v.toUpperCase() : " " + v.toLowerCase();
+                });  
+                if (acronymns.includes(camelCase.toLowerCase())){
+                    camelCase = camelCase.toUpperCase()
+                }
+                $(this)
+                    .attr("title", original_text)
+                    .html(camelCase)                
+            } else {
+                toChar = unicodeToChar(original_text)
+                $(this).html(toChar) 
+            }
         });    
     });
 }
@@ -75,6 +100,54 @@ $("#exploreSubmit").on("click", function () {
     `);
     resolveEntity(res)
 });
+
+const App = new Vue({
+    el: '#sparqlResults',
+    vuetify: new Vuetify(),
+    delimiters: ['<%', '%>'],
+    data: {
+        response: []
+    }, 
+    computed: {
+        headers(){
+            headers = []
+            $(response).each(function(_, snapshots){
+                $.each(snapshots, function(_, values){
+                    $(values).each(function(_, value){
+                        $.each(value, function(key, _){
+                            header = {"text": key, "value": key, "sortable": true}
+                            if (!headers.some(header => header.text == key && header.value == key)) {
+                                headers.push(header)
+                            }
+                        });
+                    });
+                });
+            });
+            return headers
+        }
+    },
+    methods: {
+        submitQuery(){
+            $("#querySubmit").html(`
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span class="ml-1">Loading...</span>
+            `);
+            var query = $("textarea#sparqlEndpoint").val()
+            $.post("/query", {"query": query}, function(data){
+                this.response = data
+                $(".sparqlResults .row").empty();
+                showHumanReadableEntities();
+                $('.middle-line').first().remove();  
+                $("#querySubmit")
+                    .html(`
+                        <span class="mr-1"><span class="fas fa-search"></span></span>
+                        Submit the query
+                    `)
+                    .blur();
+            });        
+        }
+    }
+})
 
 // Click on entity
 $(document).on("click", "a.entity", function(e){
