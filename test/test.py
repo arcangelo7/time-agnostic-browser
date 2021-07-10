@@ -28,8 +28,9 @@ from time_agnostic_browser.support import FileManager, _to_dict_of_nt_sorted_lis
 class Test_AgnosticEntity(unittest.TestCase):
     def test_get_history(self):
         input = "https://github.com/arcangelo7/time_agnostic/ar/15519"
-        output = _to_dict_of_nt_sorted_lists(AgnosticEntity(input).get_history()[0])
-        expected_output = {
+        entity_history = AgnosticEntity(input).get_history()
+        output = (_to_dict_of_nt_sorted_lists(entity_history[0]), entity_history[1])
+        expected_output = ({
             'https://github.com/arcangelo7/time_agnostic/ar/15519': {
                 '2021-06-01T18:46:41': [
                     '<https://github.com/arcangelo7/time_agnostic/ar/15519> <http://purl.org/spar/pro/isHeldBy> <https://github.com/arcangelo7/time_agnostic/ra/4>', 
@@ -49,7 +50,7 @@ class Test_AgnosticEntity(unittest.TestCase):
                     '<https://github.com/arcangelo7/time_agnostic/ar/15519> <https://w3id.org/oc/ontology/hasNext> <https://github.com/arcangelo7/time_agnostic/ar/15520>'
                 ]
             }
-        }
+        }, None)
         self.assertEqual(output, expected_output)
 
     def test_get_history_with_metadata(self):

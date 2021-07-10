@@ -39,15 +39,16 @@
                             <div class="tab-pane fade show active" id="tabs-icons-text-1" role="tabpanel" aria-labelledby="tabs-icons-text-1-tab">
                                 <label for="searchByURI">Enter a URI to begin navigation</label>
                                 <input type="text" class="form-control" id="searchByURI" aria-describedby="searchByURI" value=https://github.com/arcangelo7/time_agnostic/ar/15519> 
-                                <button id="exploreSubmit" class="btn btn-outline-primary m-5">
+                                <button id="exploreSubmit" class="btn btn-outline-primary m-5 align-self-end">
                                     <span class="mr-1"><span class="fas fa-search"></span></span>
                                     Submit the query
                                 </button>
                             </div>
                             <div class="tab-pane fade" id="tabs-icons-text-2" role="tabpanel" aria-labelledby="tabs-icons-text-2-tab">
                                 <div id="sparqlResults">
-                                    <label for="sparqlEndpoint">Input a SPARQL query</label>
-                                    <textarea class="form-control mb-1" id="sparqlEndpoint" rows="12">
+                                    <v-app>
+                                        <label for="sparqlEndpoint">Input a SPARQL query</label>
+                                        <textarea class="form-control mb-1" id="sparqlEndpoint" rows="12">
     PREFIX literal: &lt;http://www.essepuntato.it/2010/06/literalreification/&gt;
     PREFIX datacite: &lt;http://purl.org/spar/datacite/&gt;
     PREFIX pro: &lt;http://purl.org/spar/pro/&gt;
@@ -59,11 +60,11 @@
         ?o datacite:hasIdentifier ?id.
         OPTIONAL {?id literal:hasLiteralValue ?value.}
     }
-                                    </textarea>
-                                    <button id="querySubmit" class="btn btn-outline-primary m-5" @click="submitQuery">
-                                        <span class="mr-1"><span class="fas fa-search"></span></span>
-                                        Submit the query
-                                    </button>
+                                        </textarea>
+                                        <button id="querySubmit" class="btn btn-outline-primary m-5 align-self-end" @click="submitQuery">
+                                            <span class="mr-1"><span class="fas fa-search"></span></span>
+                                            Submit the query
+                                        </button>
                                         <div class="timeline timeline-five mt-6">
                                             <div class="row" v-for="snapshot in response">
                                                 <template v-for="(results, time) in snapshot">
@@ -81,22 +82,20 @@
                                                     <!-- Timeline item 1 content-->
                                                     <div class="col-12 col-lg-12 col-xl-11 my-4 timeline-item">
                                                         <div class="card shadow border-gray-300 text-primary p-4">
-                                                            <div class="card-body">
-                                                                <v-app>
-                                                                    <v-data-table 
-                                                                                :items="results"
-                                                                                :headers="headers"
-                                                                                :hide-default-footer="true"
-                                                                                >
-                                                                    </v-data-table>
-                                                                </v-app>
+                                                            <div class="card-body"> 
+                                                                <v-data-table 
+                                                                            :items="results"
+                                                                            :headers="headers"
+                                                                            :hide-default-footer="true"
+                                                                            >
+                                                                </v-data-table>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </template>
                                             </div>
                                         </div>
-                                    
+                                    </v-app>
                                 </div>    
                             </div>
                         </div>

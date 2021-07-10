@@ -106,25 +106,8 @@ const App = new Vue({
     vuetify: new Vuetify(),
     delimiters: ['<%', '%>'],
     data: {
-        response: []
-    }, 
-    computed: {
-        headers(){
-            headers = []
-            $(response).each(function(_, snapshots){
-                $.each(snapshots, function(_, values){
-                    $(values).each(function(_, value){
-                        $.each(value, function(key, _){
-                            header = {"text": key, "value": key, "sortable": true}
-                            if (!headers.some(header => header.text == key && header.value == key)) {
-                                headers.push(header)
-                            }
-                        });
-                    });
-                });
-            });
-            return headers
-        }
+        response: [],
+        headers: []
     },
     methods: {
         submitQuery(){
@@ -132,21 +115,36 @@ const App = new Vue({
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 <span class="ml-1">Loading...</span>
             `);
+            $(".sparqlResults .row").empty();
             var query = $("textarea#sparqlEndpoint").val()
-            $.post("/query", {"query": query}, function(data){
-                this.response = data
-                $(".sparqlResults .row").empty();
+            this.$http.post("/query", {"query": query}, {'emulateJSON':true}).then(function (data){
+                this.response = data["body"]
+                headers = []
+                $(this.response).each(function(_, snapshots){
+                    $.each(snapshots, function(_, values){
+                        $(values).each(function(_, value){
+                            $.each(value, function(key, _){
+                                header = {"text": key, "value": key, "sortable": true}
+                                if (!headers.some(header => header.text == key && header.value == key)) {
+                                    headers.push(header)
+                                }
+                            });
+                        });
+                    });
+                });
+                this.headers = headers
                 showHumanReadableEntities();
                 $('.middle-line').first().remove();  
+                console.log($('.middle-line').first())
                 $("#querySubmit")
                     .html(`
                         <span class="mr-1"><span class="fas fa-search"></span></span>
                         Submit the query
                     `)
                     .blur();
-            });        
+            });
         }
-    }
+    },
 })
 
 // Click on entity

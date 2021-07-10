@@ -226,6 +226,8 @@ class AgnosticEntity:
         if include_prov_metadata:
             prov_metadata = self._include_prov_metadata(triples_generated_at_time, current_state)
             entity_current_state.append(prov_metadata)
+        else:
+            entity_current_state.append(None)
         return entity_current_state
 
     def _get_old_graphs(self, entity_current_state:List[Dict[str, Dict[str, ConjunctiveGraph]]]) -> list:

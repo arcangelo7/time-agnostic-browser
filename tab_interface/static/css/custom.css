@@ -58,7 +58,6 @@ ul.ui-autocomplete {
     z-index: 1100;
 }
 
-#querySubmit, 
 #exploreSubmit {
     float: right;
 }
@@ -111,3 +110,9 @@ td, .resName {
 }
 
 [v-cloak] { display: none }
+
+.v-application--wrap {
+    min-height: 1vh !important;
+    font-family: "Nunito Sans";
+}
+  
