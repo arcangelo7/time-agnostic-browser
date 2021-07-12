@@ -70,6 +70,8 @@
                                     <span class="m-3"><strong>Snapshot attributed to</strong>: <span class="responsibleAgent">{{value}}</span></span>
                                 {% elif key == "http://www.w3.org/ns/prov#hadPrimarySource" and value %}
                                     <span class="m-3"><strong>Snapshot primary source</strong>: <span class="primarySource">{{value}}</span></span>
+                                {% elif key == "http://purl.org/dc/terms/description" and value %}
+                                    <span class="m-3"><strong>Snapshot description</strong>: <span class="se_description">{{value}}</span></span>
                                 {% endif %}
                             {% endfor %}
                             <div class="d-flex h-50">

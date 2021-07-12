@@ -1,6 +1,6 @@
 {
     "dataset": {
-        "triplestore_urls": ["http://localhost:19999/blazegraph/sparql"],
+        "triplestore_urls": ["http://localhost:9999/blazegraph/sparql"],
         "file_paths": []
     },
     "provenance": {

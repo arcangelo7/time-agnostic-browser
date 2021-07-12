@@ -71,10 +71,12 @@ def get_prov_metadata_by_time(prov_metadata:Dict[str, Dict]) -> Dict[str, Dict]:
             time = get_human_readable_date(metadata["http://www.w3.org/ns/prov#generatedAtTime"])
             responsible_agent = metadata["http://www.w3.org/ns/prov#wasAttributedTo"]
             source = metadata["http://www.w3.org/ns/prov#hadPrimarySource"]
+            description = metadata["http://purl.org/dc/terms/description"]
             prov_metadata_by_time[entity].setdefault(time, dict())
             prov_metadata_by_time[entity][time]["http://www.w3.org/ns/prov#generatedAtTime"] = time
             prov_metadata_by_time[entity][time]["http://www.w3.org/ns/prov#wasAttributedTo"] = responsible_agent
             prov_metadata_by_time[entity][time]["http://www.w3.org/ns/prov#hadPrimarySource"] = source
+            prov_metadata_by_time[entity][time]["http://purl.org/dc/terms/description"] = description
     return prov_metadata_by_time
 
 @app.route("/")
@@ -113,9 +115,9 @@ def query():
             for i, el in enumerate(output):
                 var = str(variables[i])
                 var_to_values[var] = el
-            dict_to_update = next(item for item in response if time in item.keys())
+            dict_to_update:Dict[str, list] = next(item for item in response if time in item.keys())
             dict_to_update[time].append(var_to_values)
-    return jsonify(response)
+    return jsonify(response=response)
 
 @app.route("/get_config")
 def get_config():

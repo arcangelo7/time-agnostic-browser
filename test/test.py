@@ -202,7 +202,7 @@ class Test_AgnosticEntity(unittest.TestCase):
         input_1 = "https://github.com/arcangelo7/time_agnostic/ar/15519"
         input_2 = "2021-05-31T19:19:47+00:00"
         output = AgnosticEntity(input_1).get_state_at_time(input_2, include_prov_metadata=False)
-        output = (_to_nt_sorted_list(output[0]), output[1])
+        output = (_to_nt_sorted_list(output[0]), output[1], output[2])
         expected_output = (
             [
                 '<https://github.com/arcangelo7/time_agnostic/ar/15519> <http://purl.org/spar/pro/isHeldBy> <https://github.com/arcangelo7/time_agnostic/ra/15519>', 
@@ -216,7 +216,8 @@ class Test_AgnosticEntity(unittest.TestCase):
                     'http://www.w3.org/ns/prov#wasAttributedTo': 'https://orcid.org/0000-0002-8420-0696', 
                     'http://www.w3.org/ns/prov#hadPrimarySource': None
                 }
-            }
+            },
+            None
         )
         self.assertEqual(output, expected_output)
 

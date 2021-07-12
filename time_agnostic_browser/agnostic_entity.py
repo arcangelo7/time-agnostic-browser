@@ -165,7 +165,7 @@ class AgnosticEntity:
                     str(ProvEntity.iri_had_primary_source): result_tuple[4]
             }
             return entity_cg, entity_snapshot, other_snapshots
-        return entity_cg, entity_snapshot, dict()
+        return entity_cg, entity_snapshot, None
     
     def _include_prov_metadata(self, triples_generated_at_time:list, current_state:ConjunctiveGraph) -> dict:
         prov_metadata = {
@@ -176,7 +176,8 @@ class AgnosticEntity:
             prov_metadata[self.res][str(triple[0])] = {
                 "http://www.w3.org/ns/prov#generatedAtTime": time,
                 "http://www.w3.org/ns/prov#wasAttributedTo": None,
-                "http://www.w3.org/ns/prov#hadPrimarySource": None
+                "http://www.w3.org/ns/prov#hadPrimarySource": None,
+                "http://purl.org/dc/terms/description": None
             }
         for entity, metadata in dict(prov_metadata).items():
             for se, _ in metadata.items():
@@ -184,9 +185,13 @@ class AgnosticEntity:
                     (URIRef(se), ProvEntity.iri_was_attributed_to, None))
                 triples_iri_had_primary_source = current_state.triples(
                     (URIRef(se), ProvEntity.iri_had_primary_source, None))
+                triples_iri_description = current_state.triples(
+                    (URIRef(se), ProvEntity.iri_description, None))
                 for triple in triples_was_attributed_to:
                     prov_metadata[entity][str(triple[0])][str(triple[1])] = str(triple[2])
                 for triple in triples_iri_had_primary_source:
+                    prov_metadata[entity][str(triple[0])][str(triple[1])] = str(triple[2])
+                for triple in triples_iri_description:
                     prov_metadata[entity][str(triple[0])][str(triple[1])] = str(triple[2])
         return prov_metadata
 
@@ -266,6 +271,7 @@ class AgnosticEntity:
             cg_no_pro.remove((None, ProvEntity.iri_was_attributed_to, None))
             cg_no_pro.remove((None, ProvEntity.iri_had_primary_source, None))
             cg_no_pro.remove((None, ProvEntity.iri_has_update_query, None))
+            cg_no_pro.remove((None, ProvEntity.iri_description, None))
             time_no_tz = self._convert_to_datetime(time)
             entity_current_state[0][self.res][time_no_tz.strftime("%Y-%m-%dT%H:%M:%S")] = cg_no_pro
         return entity_current_state
@@ -343,12 +349,14 @@ class AgnosticEntity:
                     ?snapshot <{ProvEntity.iri_generated_at_time}> ?t; 
                               <{ProvEntity.iri_was_attributed_to}> ?responsibleAgent;
                               <{ProvEntity.iri_had_primary_source}> ?source;
+                              <{ProvEntity.iri_description}> ?description;
                               <{ProvEntity.iri_has_update_query}> ?updateQuery.
                 }} 
                 WHERE {{
                     ?snapshot <{ProvEntity.iri_specialization_of}> <{self.res}>;
                               <{ProvEntity.iri_was_attributed_to}> ?responsibleAgent;
-                              <{ProvEntity.iri_generated_at_time}> ?t.
+                              <{ProvEntity.iri_generated_at_time}> ?t;
+                              <{ProvEntity.iri_description}> ?description.
                 OPTIONAL {{
                         ?snapshot <{ProvEntity.iri_had_primary_source}> ?source.
                     }}   
